@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Linki - A Brand New Cyber Pet</title>
+  <meta name="description" content="Linki - 一种全新的赛博陪伴宠物，会感知、会回应、会陪伴。" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- ===== 公告条 Announcement Bar ===== -->
+  <div class="announcement" aria-hidden="true">
+    <div class="announcement__track">
+      <div class="announcement__set">
+        <img src="assets/linki-mark.svg" alt="" />
+        <img src="assets/linki-rabbit-mark.svg" alt="" />
+        <img src="assets/linki-pig-mark.svg" alt="" />
+        <img src="assets/linki-panda-mark.svg" alt="" />
+        <img src="assets/linki-mark.svg" alt="" />
+        <img src="assets/linki-rabbit-mark.svg" alt="" />
+        <img src="assets/linki-pig-mark.svg" alt="" />
+        <img src="assets/linki-panda-mark.svg" alt="" />
+      </div>
+      <div class="announcement__set">
+        <img src="assets/linki-mark.svg" alt="" />
+        <img src="assets/linki-rabbit-mark.svg" alt="" />
+        <img src="assets/linki-pig-mark.svg" alt="" />
+        <img src="assets/linki-panda-mark.svg" alt="" />
+        <img src="assets/linki-mark.svg" alt="" />
+        <img src="assets/linki-rabbit-mark.svg" alt="" />
+        <img src="assets/linki-pig-mark.svg" alt="" />
+        <img src="assets/linki-panda-mark.svg" alt="" />
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 顶部导航 Sticky Header ===== -->
+  <header class="header" id="header">
+    <div class="container header__inner">
+      <a href="#" class="header__logo" aria-label="Linki">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-word">Linki</span>
+      </a>
+
+      <nav class="nav" id="nav" aria-label="主导航">
+        <a href="#intro" class="nav__link">灵奇</a>
+        <a href="#feature" class="nav__link">特别企划</a>
+        <a href="#faq" class="nav__link">关于</a>
+        <a href="#newsletter" class="nav__link">联系我们</a>
+        <a href="#intro" class="nav__link">全部产品</a>
+      </nav>
+
+      <div class="header__actions">
+        <button class="icon-btn" aria-label="搜索">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+        </button>
+        <button class="icon-btn" aria-label="账户">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+        </button>
+        <button class="icon-btn icon-btn--cart" id="cartToggle" aria-label="购物车">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M6 6L5 2H2"/></svg>
+          <span class="cart-count">0</span>
+        </button>
+        <button class="hamburger" id="hamburger" aria-label="菜单" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== 购物车抽屉 Cart Drawer ===== -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
+    <div class="cart-drawer__head">
+      <h3>购物车</h3>
+      <button class="icon-btn" id="cartClose" aria-label="关闭">✕</button>
+    </div>
+    <div class="cart-drawer__body">
+      <p class="cart-empty">购物车还是空的～</p>
+    </div>
+    <div class="cart-drawer__foot">
+      <button class="btn btn--accent btn--block">去结算</button>
+    </div>
+  </aside>
+
+  <main>
+    <!-- ===== Hero 视频区（全屏叠标题） ===== -->
+    <section class="hero" id="hero">
+      <video class="hero__video" src="17772587791866454_20260828_091709_Seedance_2.0.mp4" autoplay muted loop playsinline></video>
+      <div class="hero__scrim"></div>
+      <div class="container hero__content">
+        <span class="hero__eyebrow reveal">桌面上的一只小生命</span>
+        <h1 class="hero__title reveal">每一次触摸<br />都是惊喜<br />每一天陪伴<br />都很真实</h1>
+        <p class="hero__sub reveal">没有摄像头，更安心。和你共享同一片四季，用最自然的方式，陪你度过每一天。</p>
+        <div class="hero__cta reveal">
+          <a href="#intro" class="btn btn--accent">立即了解</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 三大特性 Highlights ===== -->
+    <section class="highlights" id="intro">
+      <div class="container">
+        <div class="section-head section-head--intro reveal">
+          <div>
+            <span class="section-eyebrow">系统能力</span>
+            <h2 class="section-title">它不需要你的时间<br />也能读懂此刻</h2>
+          </div>
+          <p class="section-head__copy">Linki 将环境感知、场景同步与即时反馈收进一台桌面设备里。技术退到背景，留给你的只有一段轻松的陪伴。</p>
+        </div>
+        <div class="highlights__grid">
+
+          <article class="highlight highlight--seasons reveal">
+            <div class="highlight__media highlight__media--2">
+              <video class="highlight__video" autoplay muted loop playsinline preload="metadata" aria-label="灵奇随四季变换的场景视频">
+                <source src="17772587791866454_20260827_021345_Seedance_2.0.mp4" type="video/mp4" />
+              </video>
+              <span class="highlight__badge">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="4"/>
+                  <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/>
+                </svg>
+              </span>
+              <div class="highlight__season-copy">
+                <span class="feature-kicker">01 / 场景同步</span>
+                <h3>和你共享同一片四季</h3>
+                <p>把时间、天气与季节的变化映射进屏内世界。你回到桌前时，它也正好生活在同一个时刻。</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="highlight highlight--signal reveal">
+            <div class="highlight__media highlight__media--1">
+              <video class="highlight__video" autoplay muted loop playsinline preload="metadata" aria-label="毫米波感知桌面在场的视频">
+                <source src="17772587791866454_20260827_165227_Seedance_2.0.mp4" type="video/mp4" />
+              </video>
+              <span class="highlight__badge">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/>
+                  <path d="M8.5 15.5a5 5 0 0 1 0-7"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/>
+                  <path d="M6 18a9 9 0 0 1 0-12"/><path d="M18 6a9 9 0 0 1 0 12"/>
+                </svg>
+              </span>
+            </div>
+            <div class="highlight__body">
+              <span class="feature-kicker">02 / 非视觉感知</span>
+              <h3>没有摄像头，只有毫米波</h3>
+              <p>以毫米波捕捉靠近、停留与动作变化，不记录图像，也不把你的桌面变成被观看的空间。</p>
+              <dl class="highlight__details">
+                <div><dt>感知方式</dt><dd>毫米波雷达</dd></div>
+                <div><dt>互动信号</dt><dd>靠近、停留、动作</dd></div>
+              </dl>
+            </div>
+          </article>
+
+          <article class="highlight highlight--touch reveal">
+            <div class="highlight__body">
+              <span class="feature-kicker">03 / 即时反馈</span>
+              <h3>每一次触碰，都不重复</h3>
+              <p>触控不是命令，而是一次轻量的对话。屏内角色会以随机事件和细微动作回应，让互动始终保留一点未知。</p>
+              <p class="highlight__note">不需要学习规则，也没有等待进度。</p>
+            </div>
+            <div class="highlight__media highlight__media--3">
+              <video class="highlight__video" autoplay muted loop playsinline preload="metadata" aria-label="手指触碰后灵奇随机反应的视频">
+                <source src="17772587791866454_20260827_025201_Seedance_2.0.mp4" type="video/mp4" />
+              </video>
+              <span class="highlight__badge">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 11V6a1.5 1.5 0 0 1 3 0v4"/><path d="M12 10V4.5a1.5 1.5 0 0 1 3 0V10"/>
+                  <path d="M15 10V6.5a1.5 1.5 0 0 1 3 0V14a6 6 0 0 1-6 6h-1.5a5 5 0 0 1-4-2l-3-4a1.6 1.6 0 0 1 2.5-2L9 14"/>
+                </svg>
+              </span>
+            </div>
+          </article>
+
+          <article class="module-showcase reveal">
+            <div class="module-showcase__toolbar">
+              <div class="module-showcase__controls" aria-label="使用场景切换">
+                <button class="module-showcase__control" type="button" data-module-scroll="prev" aria-label="查看上一个场景">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <button class="module-showcase__control" type="button" data-module-scroll="next" aria-label="查看下一个场景">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="module-showcase__rail" id="moduleShowcase" tabindex="0" aria-label="可左右滑动浏览的真实使用场景">
+              <figure class="module-showcase__slide">
+                <img src="20260827-215441.png" alt="夜里加班，男生伸手逗了逗桌上的灵奇" />
+              </figure>
+              <figure class="module-showcase__slide">
+                <img src="i2i_20260826_081412_22aa4f9093.png" alt="办公桌前专注工作，灵奇安静陪在一旁" />
+              </figure>
+              <figure class="module-showcase__slide">
+                <img src="interact_touch_wake.png" alt="用户轻触灵奇，屏内仓鼠醒来回应" />
+              </figure>
+            </div>
+            <div class="module-showcase__body">
+              <h3>它就这样，融进你的日常</h3>
+              <p>工作、发呆、深夜加班——灵奇一直安静地待在桌角。随手一次触碰、一个抬头，都是一次刚刚好的陪伴。</p>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 技术规格区 Specs（datasheet 冷科技） ===== -->
+    <section class="specs" id="specs">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="section-eyebrow">冷科技 · 暖内核</span>
+          <h2 class="section-title">看不见的用心</h2>
+        </div>
+        <div class="specs__grid">
+
+          <article class="spec reveal">
+            <span class="spec__no">SPEC 01</span>
+            <h3>裸眼 3D 立体显示</h3>
+            <p>在透明主体内形成具有空间层次的动态画面，让角色、光影与微缩场景始终处于你的视线范围。</p>
+            <dl class="spec__meta">
+              <div><dt>显示</dt><dd>裸眼立体全息</dd></div>
+              <div><dt>结构</dt><dd>透明玻璃 + 金属底座</dd></div>
+            </dl>
+          </article>
+
+          <article class="spec reveal">
+            <span class="spec__no">SPEC 02</span>
+            <h3>非视觉环境感知</h3>
+            <p>毫米波雷达负责识别人与设备之间的状态变化，以更克制的方式建立适时的互动反馈。</p>
+            <dl class="spec__meta">
+              <div><dt>感知</dt><dd>毫米波雷达</dd></div>
+              <div><dt>摄像头</dt><dd>无</dd></div>
+            </dl>
+          </article>
+
+          <article class="spec reveal">
+            <span class="spec__no">SPEC 03</span>
+            <h3>磁吸角色接口</h3>
+            <p>顶部模块连接物理外观与数字角色，为不同性格、造型和故事留出持续扩展的空间。</p>
+            <dl class="spec__meta">
+              <div><dt>连接</dt><dd>顶部磁吸</dd></div>
+              <div><dt>角色</dt><dd>可扩展</dd></div>
+            </dl>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 手风琴特性区 Accordion + 图片切换 ===== -->
+    <section class="feature" id="feature">
+      <div class="container">
+        <div class="feature__head">
+          <span class="section-eyebrow reveal">陪伴机制</span>
+          <h2 class="section-title reveal">不必完成任务，陪伴仍然成立</h2>
+          <p class="feature__lead reveal">将感知、环境和随机互动收进一台安静的桌面设备里。它不占用注意力，只在你需要轻松一下时提供回应。</p>
+        </div>
+        <div class="feature__grid">
+          <div class="feature__visual">
+            <!-- 每块对应左侧图片，替换 <img> 即可 -->
+            <div class="feature__img is-active" data-panel="0"><img src="assets/ft-busy.png" alt="仓鼠在灵奇里跑轮健身" /></div>
+            <div class="feature__img" data-panel="1"><img src="i2i_20260826_081412_22aa4f9093.png" alt="用户专注工作，仓鼠在灵奇里安静生活" /></div>
+            <div class="feature__img" data-panel="2"><img src="i2i_20260827_011643_3d3903fa65.png" alt="触碰触发随机反应" /></div>
+            <div class="feature__img" data-panel="3"><img src="assets/roles-grid.png" alt="可扩展的角色：熊猫、狐狸、柴犬、小猪" /></div>
+          </div>
+          <div class="accordion" id="accordion">
+            <div class="accordion__item is-open" data-index="0">
+              <button class="accordion__head"><span>无需维护的陪伴机制</span><i class="chevron"></i></button>
+              <div class="accordion__panel"><p>不以喂养、签到或任务维持关系。Linki 保持自己的日常节奏，让陪伴自然地发生在你的工作间隙。</p></div>
+            </div>
+            <div class="accordion__item" data-index="1">
+              <button class="accordion__head"><span>低打扰的环境感知</span><i class="chevron"></i></button>
+              <div class="accordion__panel"><p>它感知你的在场，却不要求回应。你专注时，它继续生活；你抬头时，恰好有一段可被发现的小变化。</p></div>
+            </div>
+            <div class="accordion__item" data-index="2">
+              <button class="accordion__head"><span>不预设脚本的反馈</span><i class="chevron"></i></button>
+              <div class="accordion__panel"><p>触碰与停留会触发随机但克制的反应。每次抬头都可能看见不同的细节，留下刚刚好的新鲜感。</p></div>
+            </div>
+            <div class="accordion__item" data-index="3">
+              <button class="accordion__head"><span>持续扩展的角色系统</span><i class="chevron"></i></button>
+              <div class="accordion__panel"><p>猫与仓鼠只是开始。通过磁吸模块，实体造型与屏内角色同步更新，让设备可以陪你更久。</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 订阅 Newsletter ===== -->
+    <section class="newsletter" id="newsletter">
+      <div class="container newsletter__inner">
+        <h2 class="reveal">加入灵奇的世界</h2>
+        <p class="reveal">订阅获取最新动态与专属优惠。</p>
+        <form class="newsletter__form reveal" id="newsletterForm">
+          <input type="email" placeholder="输入你的邮箱" required />
+          <button type="submit" class="btn btn--accent">订阅</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== 页脚 Footer ===== -->
+  <footer class="footer" id="faq">
+    <div class="container footer__grid">
+      <div class="footer__col footer__brand">
+        <span class="header__logo">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span class="brand-word">Linki</span>
+        </span>
+        <p>为赛博生活而生的陪伴宠物。</p>
+      </div>
+      <div class="footer__col">
+        <h3>产品</h3>
+        <a href="#intro">灵奇</a>
+        <a href="#intro">配件</a>
+        <a href="#feature">特性</a>
+      </div>
+      <div class="footer__col">
+        <h3>支持</h3>
+        <a href="#">常见问题</a>
+        <a href="#">配送政策</a>
+        <a href="#">联系我们</a>
+      </div>
+      <div class="footer__col">
+        <h3>关注我们</h3>
+        <div class="footer__social">
+          <a href="#" aria-label="Instagram">IG</a>
+          <a href="#" aria-label="TikTok">TT</a>
+          <a href="#" aria-label="X">X</a>
+          <a href="#" aria-label="YouTube">YT</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 Linki. All rights reserved.</span>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
