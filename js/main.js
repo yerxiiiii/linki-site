@@ -107,13 +107,42 @@
     window.addEventListener('resize', fillAnnouncementTrack, { passive: true });
   }
 
-  /* ---------- 非首屏视频：接近可视区域再加载 ---------- */
-  const lazyVideos = document.querySelectorAll('[data-lazy-video]');
-  function loadLazyVideo(video) {
+  /* ---------- 首屏视频：先显示海报图，再后台加载并淡入 ---------- */
+  const heroVideo = document.querySelector('[data-hero-video]');
+  function hydrateVideoSources(video) {
     video.querySelectorAll('source[data-src]').forEach(function (source) {
       source.src = source.dataset.src;
       source.removeAttribute('data-src');
     });
+  }
+  function loadHeroVideo() {
+    if (!heroVideo) return;
+    hydrateVideoSources(heroVideo);
+    heroVideo.addEventListener('loadeddata', function () {
+      heroVideo.classList.add('is-ready');
+    }, { once: true });
+    heroVideo.load();
+    heroVideo.play().catch(function () {});
+  }
+  if (heroVideo && !(navigator.connection && navigator.connection.saveData)) {
+    const scheduleHeroVideo = function () {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadHeroVideo, { timeout: 1200 });
+      } else {
+        window.setTimeout(loadHeroVideo, 700);
+      }
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', scheduleHeroVideo, { once: true });
+    } else {
+      scheduleHeroVideo();
+    }
+  }
+
+  /* ---------- 非首屏视频：接近可视区域再加载 ---------- */
+  const lazyVideos = document.querySelectorAll('[data-lazy-video]');
+  function loadLazyVideo(video) {
+    hydrateVideoSources(video);
     video.load();
     video.play().catch(function () {});
   }

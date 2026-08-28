@@ -8,6 +8,7 @@
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="image" href="../assets/optimized/hero-091709-poster.webp" fetchpriority="high" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/styles.css" />
 </head>
@@ -91,7 +92,11 @@
   <main>
     <!-- ===== Hero video (full-screen with overlaid title) ===== -->
     <section class="hero" id="hero">
-      <video class="hero__video" src="../17772587791866454_20260828_091709_Seedance_2.0.mp4" autoplay muted loop playsinline></video>
+      <img class="hero__poster" src="../assets/optimized/hero-091709-poster.webp" alt="" fetchpriority="high" decoding="async" />
+      <video class="hero__video" autoplay muted loop playsinline preload="none" poster="../assets/optimized/hero-091709-poster.webp" data-hero-video>
+        <source data-src="../assets/optimized/hero-091709.webm" type="video/webm" />
+        <source data-src="../assets/optimized/hero-091709.mp4" type="video/mp4" />
+      </video>
       <div class="hero__scrim"></div>
       <div class="container hero__content">
         <span class="hero__eyebrow reveal">A little life on your desk</span>
@@ -117,8 +122,9 @@
 
           <article class="highlight highlight--seasons reveal">
             <div class="highlight__media highlight__media--2">
-              <video class="highlight__video" autoplay muted loop playsinline preload="metadata" aria-label="Video of Linki changing with the seasons">
-                <source src="../17772587791866454_20260827_021345_Seedance_2.0.mp4" type="video/mp4" />
+              <video class="highlight__video" autoplay muted loop playsinline preload="none" poster="../assets/optimized/seasons-021345-poster.webp" data-lazy-video aria-label="Video of Linki changing with the seasons">
+                <source data-src="../assets/optimized/seasons-021345.webm" type="video/webm" />
+                <source data-src="../assets/optimized/seasons-021345.mp4" type="video/mp4" />
               </video>
               <span class="highlight__badge">
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -136,8 +142,9 @@
 
           <article class="highlight highlight--signal reveal">
             <div class="highlight__media highlight__media--1">
-              <video class="highlight__video" autoplay muted loop playsinline preload="metadata" aria-label="Video of millimeter-wave presence sensing on the desk">
-                <source src="../17772587791866454_20260827_165227_Seedance_2.0.mp4" type="video/mp4" />
+              <video class="highlight__video" autoplay muted loop playsinline preload="none" poster="../assets/optimized/signal-165227-poster.webp" data-lazy-video aria-label="Video of millimeter-wave presence sensing on the desk">
+                <source data-src="../assets/optimized/signal-165227.webm" type="video/webm" />
+                <source data-src="../assets/optimized/signal-165227.mp4" type="video/mp4" />
               </video>
               <span class="highlight__badge">
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
@@ -166,8 +173,9 @@
               <p class="highlight__note">No rules to learn, no progress bars to wait on.</p>
             </div>
             <div class="highlight__media highlight__media--3">
-              <video class="highlight__video" autoplay muted loop playsinline preload="metadata" aria-label="Video of Linki reacting randomly after a finger touch">
-                <source src="../17772587791866454_20260827_025201_Seedance_2.0.mp4" type="video/mp4" />
+              <video class="highlight__video" autoplay muted loop playsinline preload="none" poster="../assets/optimized/touch-025201-poster.webp" data-lazy-video aria-label="Video of Linki reacting randomly after a finger touch">
+                <source data-src="../assets/optimized/touch-025201.webm" type="video/webm" />
+                <source data-src="../assets/optimized/touch-025201.mp4" type="video/mp4" />
               </video>
               <span class="highlight__badge">
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -191,13 +199,13 @@
             </div>
             <div class="module-showcase__rail" id="moduleShowcase" tabindex="0" aria-label="Swipe to browse real-life scenes">
               <figure class="module-showcase__slide">
-                <img src="../20260827-215441.png" alt="Working late at night, a man reaches out to play with Linki on his desk" />
+                <img src="../assets/optimized/scenario-night.webp" alt="Working late at night, a man reaches out to play with Linki on his desk" loading="lazy" decoding="async" />
               </figure>
               <figure class="module-showcase__slide">
-                <img src="../i2i_20260826_081412_22aa4f9093.png" alt="Focused at the desk, Linki quietly keeps company nearby" />
+                <img src="../assets/optimized/scenario-desk-work.webp" alt="Focused at the desk, Linki quietly keeps company nearby" loading="lazy" decoding="async" />
               </figure>
               <figure class="module-showcase__slide">
-                <img src="../interact_touch_wake.png" alt="A user gently touches Linki and the on-screen hamster wakes in response" />
+                <img src="../assets/optimized/scenario-touch-wake.webp" alt="A user gently touches Linki and the on-screen hamster wakes in response" loading="lazy" decoding="async" />
               </figure>
             </div>
             <div class="module-showcase__body">
@@ -265,10 +273,10 @@
         <div class="feature__grid">
           <div class="feature__visual">
             <!-- Each block maps to the left-hand image; swap the <img> to change it -->
-            <div class="feature__img is-active" data-panel="0"><img src="../i2i_20260826_081412_22aa4f9093.png" alt="A user works while the hamster lives quietly inside Linki" /></div>
-            <div class="feature__img" data-panel="1"><img src="../i2i_20260826_084407_bcc410fac5.png" alt="Linki resting quietly on the desk" /></div>
-            <div class="feature__img" data-panel="2"><img src="../i2i_20260827_011643_3d3903fa65.png" alt="A touch triggers a random reaction" /></div>
-            <div class="feature__img" data-panel="3"><img src="../assets/roles-grid.png" alt="Expandable characters: panda, fox, shiba, pig" /></div>
+            <div class="feature__img is-active" data-panel="0"><img src="../assets/optimized/scenario-desk-work.webp" alt="A user works while the hamster lives quietly inside Linki" loading="lazy" decoding="async" /></div>
+            <div class="feature__img" data-panel="1"><img src="../assets/optimized/feature-rest.webp" alt="Linki resting quietly on the desk" loading="lazy" decoding="async" /></div>
+            <div class="feature__img" data-panel="2"><img src="../assets/optimized/feature-touch.webp" alt="A touch triggers a random reaction" loading="lazy" decoding="async" /></div>
+            <div class="feature__img" data-panel="3"><img src="../assets/optimized/roles-grid.webp" alt="Expandable characters: panda, fox, shiba, pig" loading="lazy" decoding="async" /></div>
           </div>
           <div class="accordion" id="accordion">
             <div class="accordion__item is-open" data-index="0">
@@ -342,6 +350,6 @@
     </div>
   </footer>
 
-  <script src="js/main.js"></script>
+  <script src="../js/main.js"></script>
 </body>
 </html>

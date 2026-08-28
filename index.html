@@ -8,6 +8,7 @@
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="image" href="assets/optimized/hero-091709-poster.webp" fetchpriority="high" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
@@ -91,9 +92,10 @@
   <main>
     <!-- ===== Hero 视频区（全屏叠标题） ===== -->
     <section class="hero" id="hero">
-      <video class="hero__video" autoplay muted loop playsinline preload="metadata" poster="assets/optimized/hero-091709-poster.webp">
-        <source src="assets/optimized/hero-091709.webm" type="video/webm" />
-        <source src="assets/optimized/hero-091709.mp4" type="video/mp4" />
+      <img class="hero__poster" src="assets/optimized/hero-091709-poster.webp" alt="" fetchpriority="high" decoding="async" />
+      <video class="hero__video" autoplay muted loop playsinline preload="none" poster="assets/optimized/hero-091709-poster.webp" data-hero-video>
+        <source data-src="assets/optimized/hero-091709.webm" type="video/webm" />
+        <source data-src="assets/optimized/hero-091709.mp4" type="video/mp4" />
       </video>
       <div class="hero__scrim"></div>
       <div class="container hero__content">
