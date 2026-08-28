@@ -49,11 +49,20 @@
       </a>
 
       <nav class="nav" id="nav" aria-label="主导航">
-        <a href="#intro" class="nav__link">灵奇</a>
-        <a href="#feature" class="nav__link">特别企划</a>
+        <a href="index.html" class="nav__link" aria-current="page">首页</a>
+        <div class="nav__group">
+          <button class="nav__toggle" type="button" aria-haspopup="true" aria-expanded="false">
+            功能
+            <svg class="nav__chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="nav__menu">
+            <a href="seasons.html" class="nav__menu-link">场景同步</a>
+            <a href="privacy.html" class="nav__menu-link">更安心的陪伴</a>
+            <a href="touch.html" class="nav__menu-link">每一次触碰</a>
+          </div>
+        </div>
         <a href="#faq" class="nav__link">关于</a>
         <a href="#newsletter" class="nav__link">联系我们</a>
-        <a href="#intro" class="nav__link">全部产品</a>
       </nav>
 
       <div class="header__actions">
@@ -99,10 +108,10 @@
       </video>
       <div class="hero__scrim"></div>
       <div class="container hero__content">
-        <span class="hero__eyebrow reveal">桌面上的一只小生命</span>
-        <h1 class="hero__title reveal">每一次触摸<br />都是惊喜<br />每一天陪伴<br />都很真实</h1>
-        <p class="hero__sub reveal">没有摄像头，更安心。和你共享同一片四季，用最自然的方式，陪你度过每一天。</p>
-        <div class="hero__cta reveal">
+        <span class="hero__eyebrow">桌面上的一只小生命</span>
+        <h1 class="hero__title">每一次触摸<br />都是惊喜<br />每一天陪伴<br />都很真实</h1>
+        <p class="hero__sub">没有摄像头，更安心。和你共享同一片四季，用最自然的方式，陪你度过每一天。</p>
+        <div class="hero__cta">
           <a href="#intro" class="btn btn--accent">立即了解</a>
         </div>
       </div>
@@ -135,7 +144,10 @@
               <div class="highlight__season-copy">
                 <span class="feature-kicker">01 / 场景同步</span>
                 <h3>和你共享同一片四季</h3>
-                <p>把时间、天气与季节的变化映射进屏内世界。你回到桌前时，它也正好生活在同一个时刻。</p>
+                <p>时间、天气与季节的变化，都映射进它的屏内世界。</p>
+                <a href="seasons.html" class="link-more">了解更多
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </a>
               </div>
             </div>
           </article>
@@ -155,13 +167,12 @@
               </span>
             </div>
             <div class="highlight__body">
-              <span class="feature-kicker">02 / 非视觉感知</span>
-              <h3>没有摄像头，只有毫米波</h3>
-              <p>以毫米波捕捉靠近、停留与动作变化，不记录图像，也不把你的桌面变成被观看的空间。</p>
-              <dl class="highlight__details">
-                <div><dt>感知方式</dt><dd>毫米波雷达</dd></div>
-                <div><dt>互动信号</dt><dd>靠近、停留、动作</dd></div>
-              </dl>
+              <span class="feature-kicker">02 / 更安心的陪伴</span>
+              <h3>桌上多一个伙伴，不多一只眼睛</h3>
+              <p>感知你的靠近与停留，不用摄像头、不留任何影像。</p>
+              <a href="privacy.html" class="link-more">了解更多
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
             </div>
           </article>
 
@@ -169,8 +180,10 @@
             <div class="highlight__body">
               <span class="feature-kicker">03 / 即时反馈</span>
               <h3>每一次触碰，都不重复</h3>
-              <p>触控不是命令，而是一次轻量的对话。屏内角色会以随机事件和细微动作回应，让互动始终保留一点未知。</p>
-              <p class="highlight__note">不需要学习规则，也没有等待进度。</p>
+              <p>触控不是命令，而是一次轻量的对话，回应始终保留一点未知。</p>
+              <a href="touch.html" class="link-more">了解更多
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
             </div>
             <div class="highlight__media highlight__media--3">
               <video class="highlight__video" autoplay muted loop playsinline preload="none" poster="assets/optimized/touch-025201-poster.webp" data-lazy-video aria-label="手指触碰后灵奇随机反应的视频">
@@ -210,7 +223,7 @@
             </div>
             <div class="module-showcase__body">
               <h3>它就这样，融进你的日常</h3>
-              <p>工作、发呆、深夜加班——灵奇一直安静地待在桌角。随手一次触碰、一个抬头，都是一次刚刚好的陪伴。</p>
+              <p>工作、发呆、深夜加班——灵奇一直安静地待在桌角。</p>
             </div>
           </article>
 
@@ -230,72 +243,21 @@
           <article class="spec reveal">
             <span class="spec__no">SPEC 01</span>
             <h3>裸眼 3D 立体显示</h3>
-            <p>在透明主体内形成具有空间层次的动态画面，让角色、光影与微缩场景始终处于你的视线范围。</p>
-            <dl class="spec__meta">
-              <div><dt>显示</dt><dd>裸眼立体全息</dd></div>
-              <div><dt>结构</dt><dd>透明玻璃 + 金属底座</dd></div>
-            </dl>
+            <p>透明主体内的动态画面自带空间层次，无需佩戴任何设备。</p>
           </article>
 
           <article class="spec reveal">
             <span class="spec__no">SPEC 02</span>
             <h3>非视觉环境感知</h3>
-            <p>毫米波雷达识别人与设备之间的状态变化，四阵列麦克持续感知周围环境，以更克制的方式建立适时的互动反馈。</p>
-            <dl class="spec__meta">
-              <div><dt>感知</dt><dd>毫米波雷达</dd></div>
-              <div><dt>声音</dt><dd>四阵列麦克</dd></div>
-              <div><dt>摄像头</dt><dd>无</dd></div>
-            </dl>
+            <p>毫米波雷达配合四麦克风阵列感知环境，全程无摄像头。</p>
           </article>
 
           <article class="spec reveal">
             <span class="spec__no">SPEC 03</span>
             <h3>磁吸角色接口</h3>
-            <p>顶部模块连接物理外观与数字角色，为不同性格、造型和故事留出持续扩展的空间。</p>
-            <dl class="spec__meta">
-              <div><dt>连接</dt><dd>顶部磁吸</dd></div>
-              <div><dt>角色</dt><dd>可扩展</dd></div>
-            </dl>
+            <p>顶部磁吸模块连接实体造型与数字角色，可持续扩展。</p>
           </article>
 
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== 手风琴特性区 Accordion + 图片切换 ===== -->
-    <section class="feature" id="feature">
-      <div class="container">
-        <div class="feature__head">
-          <span class="section-eyebrow reveal">陪伴机制</span>
-          <h2 class="section-title reveal">不必完成任务，陪伴仍然成立</h2>
-          <p class="feature__lead reveal">将感知、环境和随机互动收进一台安静的桌面设备里。它不占用注意力，只在你需要轻松一下时提供回应。</p>
-        </div>
-        <div class="feature__grid">
-          <div class="feature__visual">
-            <!-- 每块对应左侧图片，替换 <img> 即可 -->
-            <div class="feature__img is-active" data-panel="0"><img src="assets/optimized/ft-busy.webp" alt="仓鼠在灵奇里跑轮健身" loading="lazy" decoding="async" /></div>
-            <div class="feature__img" data-panel="1"><img src="assets/optimized/scenario-desk-work.webp" alt="用户专注工作，仓鼠在灵奇里安静生活" loading="lazy" decoding="async" /></div>
-            <div class="feature__img" data-panel="2"><img src="assets/optimized/feature-touch.webp" alt="触碰触发随机反应" loading="lazy" decoding="async" /></div>
-            <div class="feature__img" data-panel="3"><img src="assets/optimized/roles-grid.webp" alt="可扩展的角色：熊猫、狐狸、柴犬、小猪" loading="lazy" decoding="async" /></div>
-          </div>
-          <div class="accordion" id="accordion">
-            <div class="accordion__item is-open" data-index="0">
-              <button class="accordion__head"><span>无需维护的陪伴机制</span><i class="chevron"></i></button>
-              <div class="accordion__panel"><p>不以喂养、签到或任务维持关系。Linki 保持自己的日常节奏，让陪伴自然地发生在你的工作间隙。</p></div>
-            </div>
-            <div class="accordion__item" data-index="1">
-              <button class="accordion__head"><span>低打扰的环境感知</span><i class="chevron"></i></button>
-              <div class="accordion__panel"><p>它感知你的在场，却不要求回应。你专注时，它继续生活；你抬头时，恰好有一段可被发现的小变化。</p></div>
-            </div>
-            <div class="accordion__item" data-index="2">
-              <button class="accordion__head"><span>不预设脚本的反馈</span><i class="chevron"></i></button>
-              <div class="accordion__panel"><p>触碰与停留会触发随机但克制的反应。每次抬头都可能看见不同的细节，留下刚刚好的新鲜感。</p></div>
-            </div>
-            <div class="accordion__item" data-index="3">
-              <button class="accordion__head"><span>持续扩展的角色系统</span><i class="chevron"></i></button>
-              <div class="accordion__panel"><p>猫与仓鼠只是开始。通过磁吸模块，实体造型与屏内角色同步更新，让设备可以陪你更久。</p></div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -326,8 +288,8 @@
       <div class="footer__col">
         <h3>产品</h3>
         <a href="#intro">灵奇</a>
-        <a href="#intro">配件</a>
-        <a href="#feature">特性</a>
+        <a href="seasons.html">场景同步</a>
+        <a href="privacy.html">更安心的陪伴</a>
       </div>
       <div class="footer__col">
         <h3>支持</h3>

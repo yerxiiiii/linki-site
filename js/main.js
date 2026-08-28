@@ -13,12 +13,40 @@
       hamburger.classList.toggle('is-active', open);
       hamburger.setAttribute('aria-expanded', String(open));
     });
-    // 点击导航链接后收起
-    nav.querySelectorAll('.nav__link').forEach(function (link) {
+    // 点击导航链接（含二级菜单链接）后收起
+    nav.querySelectorAll('.nav__link, .nav__menu-link').forEach(function (link) {
       link.addEventListener('click', function () {
         nav.classList.remove('is-open');
         hamburger.classList.remove('is-active');
         hamburger.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
+
+  /* ---------- 一级/二级下拉菜单 ---------- */
+  const navGroups = document.querySelectorAll('.nav__group');
+  if (navGroups.length) {
+    navGroups.forEach(function (group) {
+      const toggle = group.querySelector('.nav__toggle');
+      if (!toggle) return;
+      toggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        const willOpen = !group.classList.contains('is-open');
+        navGroups.forEach(function (g) {
+          g.classList.remove('is-open');
+          const t = g.querySelector('.nav__toggle');
+          if (t) t.setAttribute('aria-expanded', 'false');
+        });
+        group.classList.toggle('is-open', willOpen);
+        toggle.setAttribute('aria-expanded', String(willOpen));
+      });
+    });
+    // 点击页面其它区域关闭下拉
+    document.addEventListener('click', function () {
+      navGroups.forEach(function (g) {
+        g.classList.remove('is-open');
+        const t = g.querySelector('.nav__toggle');
+        if (t) t.setAttribute('aria-expanded', 'false');
       });
     });
   }

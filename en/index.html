@@ -49,11 +49,20 @@
       </a>
 
       <nav class="nav" id="nav" aria-label="Primary navigation">
-        <a href="#intro" class="nav__link">Linki</a>
-        <a href="#feature" class="nav__link">Special Projects</a>
+        <a href="index.html" class="nav__link" aria-current="page">Home</a>
+        <div class="nav__group">
+          <button class="nav__toggle" type="button" aria-haspopup="true" aria-expanded="false">
+            Features
+            <svg class="nav__chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="nav__menu">
+            <a href="seasons.html" class="nav__menu-link">Scene sync</a>
+            <a href="privacy.html" class="nav__menu-link">Peace of mind</a>
+            <a href="touch.html" class="nav__menu-link">Every touch</a>
+          </div>
+        </div>
         <a href="#faq" class="nav__link">About</a>
         <a href="#newsletter" class="nav__link">Contact</a>
-        <a href="#intro" class="nav__link">All Products</a>
       </nav>
 
       <div class="header__actions">
@@ -99,10 +108,10 @@
       </video>
       <div class="hero__scrim"></div>
       <div class="container hero__content">
-        <span class="hero__eyebrow reveal">A little life on your desk</span>
-        <h1 class="hero__title reveal">Every touch, a little surprise<br />Every day, real company</h1>
-        <p class="hero__sub reveal">No camera, more peace of mind. It shares the same seasons with you, keeping you company in the most natural way, every single day.</p>
-        <div class="hero__cta reveal">
+        <span class="hero__eyebrow">A little life on your desk</span>
+        <h1 class="hero__title">Every touch, a little surprise<br />Every day, real company</h1>
+        <p class="hero__sub">No camera, more peace of mind. It shares the same seasons with you, keeping you company in the most natural way, every single day.</p>
+        <div class="hero__cta">
           <a href="#intro" class="btn btn--accent">Learn more</a>
         </div>
       </div>
@@ -135,7 +144,10 @@
               <div class="highlight__season-copy">
                 <span class="feature-kicker">01 / Scene sync</span>
                 <h3>Sharing the same seasons with you</h3>
-                <p>It maps the changes of time, weather and season into the world inside the screen. When you return to your desk, it's living in the very same moment.</p>
+                <p>Time, weather and season all map into the world inside its screen.</p>
+                <a href="seasons.html" class="link-more">Learn more
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </a>
               </div>
             </div>
           </article>
@@ -155,13 +167,12 @@
               </span>
             </div>
             <div class="highlight__body">
-              <span class="feature-kicker">02 / Non-visual sensing</span>
-              <h3>No camera, only millimeter wave</h3>
-              <p>It uses millimeter-wave radar to sense approach, presence and movement—recording no images, and never turning your desk into a watched space.</p>
-              <dl class="highlight__details">
-                <div><dt>Sensing</dt><dd>Millimeter-wave radar</dd></div>
-                <div><dt>Signals</dt><dd>Approach, presence, motion</dd></div>
-              </dl>
+              <span class="feature-kicker">02 / Peace of mind</span>
+              <h3>A companion on your desk—not a camera</h3>
+              <p>It senses your presence and lingering—no camera, no images ever stored.</p>
+              <a href="privacy.html" class="link-more">Learn more
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
             </div>
           </article>
 
@@ -169,8 +180,10 @@
             <div class="highlight__body">
               <span class="feature-kicker">03 / Instant response</span>
               <h3>No two touches are alike</h3>
-              <p>A touch isn't a command but a light conversation. The character on screen responds with random events and subtle motions, keeping a little of the unknown in every interaction.</p>
-              <p class="highlight__note">No rules to learn, no progress bars to wait on.</p>
+              <p>A touch isn't a command but a light conversation—always keeping a little of the unknown.</p>
+              <a href="touch.html" class="link-more">Learn more
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
             </div>
             <div class="highlight__media highlight__media--3">
               <video class="highlight__video" autoplay muted loop playsinline preload="none" poster="../assets/optimized/touch-025201-poster.webp" data-lazy-video aria-label="Video of Linki reacting randomly after a finger touch">
@@ -210,7 +223,7 @@
             </div>
             <div class="module-showcase__body">
               <h3>It just blends into your everyday</h3>
-              <p>Working, daydreaming, burning the midnight oil—Linki stays quietly at the corner of your desk. A casual touch or a glance up is company that's just right.</p>
+              <p>Working, daydreaming, burning the midnight oil—Linki stays quietly at the corner of your desk.</p>
             </div>
           </article>
 
@@ -230,72 +243,21 @@
           <article class="spec reveal">
             <span class="spec__no">SPEC 01</span>
             <h3>Naked-eye 3D display</h3>
-            <p>Inside the transparent body it forms dynamic imagery with real spatial depth, keeping the character, light and miniature scenes always within your view.</p>
-            <dl class="spec__meta">
-              <div><dt>Display</dt><dd>Naked-eye holographic</dd></div>
-              <div><dt>Structure</dt><dd>Glass body + metal base</dd></div>
-            </dl>
+            <p>Dynamic imagery with real spatial depth inside the transparent body—no glasses needed.</p>
           </article>
 
           <article class="spec reveal">
             <span class="spec__no">SPEC 02</span>
             <h3>Non-visual environmental sensing</h3>
-            <p>Millimeter-wave radar reads the changing state between you and the device, while a four-microphone array continuously senses the surrounding environment for timely, restrained feedback.</p>
-            <dl class="spec__meta">
-              <div><dt>Sensing</dt><dd>Millimeter-wave radar</dd></div>
-              <div><dt>Audio</dt><dd>Four-microphone array</dd></div>
-              <div><dt>Camera</dt><dd>None</dd></div>
-            </dl>
+            <p>Millimeter-wave radar with a four-microphone array senses the room—no camera at all.</p>
           </article>
 
           <article class="spec reveal">
             <span class="spec__no">SPEC 03</span>
             <h3>Magnetic character interface</h3>
-            <p>The top module links the physical form to the digital character, leaving room to keep expanding personalities, looks and stories.</p>
-            <dl class="spec__meta">
-              <div><dt>Connection</dt><dd>Top magnetic mount</dd></div>
-              <div><dt>Characters</dt><dd>Expandable</dd></div>
-            </dl>
+            <p>A top magnetic module links the physical form to the digital character, always expandable.</p>
           </article>
 
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== Accordion feature + image switching ===== -->
-    <section class="feature" id="feature">
-      <div class="container">
-        <div class="feature__head">
-          <span class="section-eyebrow reveal">Companionship</span>
-          <h2 class="section-title reveal">No tasks to finish, the company still holds</h2>
-          <p class="feature__lead reveal">Sensing, environment and random interaction packed into one quiet desktop device. It doesn't demand your attention—it responds only when you need a little lightness.</p>
-        </div>
-        <div class="feature__grid">
-          <div class="feature__visual">
-            <!-- Each block maps to the left-hand image; swap the <img> to change it -->
-            <div class="feature__img is-active" data-panel="0"><img src="../assets/optimized/scenario-desk-work.webp" alt="A user works while the hamster lives quietly inside Linki" loading="lazy" decoding="async" /></div>
-            <div class="feature__img" data-panel="1"><img src="../assets/optimized/feature-rest.webp" alt="Linki resting quietly on the desk" loading="lazy" decoding="async" /></div>
-            <div class="feature__img" data-panel="2"><img src="../assets/optimized/feature-touch.webp" alt="A touch triggers a random reaction" loading="lazy" decoding="async" /></div>
-            <div class="feature__img" data-panel="3"><img src="../assets/optimized/roles-grid.webp" alt="Expandable characters: panda, fox, shiba, pig" loading="lazy" decoding="async" /></div>
-          </div>
-          <div class="accordion" id="accordion">
-            <div class="accordion__item is-open" data-index="0">
-              <button class="accordion__head"><span>Company that needs no upkeep</span><i class="chevron"></i></button>
-              <div class="accordion__panel"><p>No feeding, check-ins or tasks to keep the bond alive. Linki keeps its own daily rhythm, so company happens naturally in the gaps of your work.</p></div>
-            </div>
-            <div class="accordion__item" data-index="1">
-              <button class="accordion__head"><span>Low-interruption sensing</span><i class="chevron"></i></button>
-              <div class="accordion__panel"><p>It senses your presence without asking for a reply. While you focus, it keeps living; when you look up, there's just a small change waiting to be noticed.</p></div>
-            </div>
-            <div class="accordion__item" data-index="2">
-              <button class="accordion__head"><span>Responses with no fixed script</span><i class="chevron"></i></button>
-              <div class="accordion__panel"><p>Touch and lingering trigger random yet restrained reactions. Every glance up might reveal a different detail, leaving just the right touch of freshness.</p></div>
-            </div>
-            <div class="accordion__item" data-index="3">
-              <button class="accordion__head"><span>An ever-expanding cast</span><i class="chevron"></i></button>
-              <div class="accordion__panel"><p>Cat, hamster and little fish are only the start. Through magnetic modules, the physical form and on-screen character update together, so the device can stay with you longer—and feel more like you.</p></div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -326,8 +288,8 @@
       <div class="footer__col">
         <h3>Product</h3>
         <a href="#intro">Linki</a>
-        <a href="#intro">Accessories</a>
-        <a href="#feature">Features</a>
+        <a href="seasons.html">Scene sync</a>
+        <a href="privacy.html">Peace of mind</a>
       </div>
       <div class="footer__col">
         <h3>Support</h3>
