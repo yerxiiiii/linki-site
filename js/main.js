@@ -107,6 +107,30 @@
     window.addEventListener('resize', fillAnnouncementTrack, { passive: true });
   }
 
+  /* ---------- 非首屏视频：接近可视区域再加载 ---------- */
+  const lazyVideos = document.querySelectorAll('[data-lazy-video]');
+  function loadLazyVideo(video) {
+    video.querySelectorAll('source[data-src]').forEach(function (source) {
+      source.src = source.dataset.src;
+      source.removeAttribute('data-src');
+    });
+    video.load();
+    video.play().catch(function () {});
+  }
+  if ('IntersectionObserver' in window) {
+    const videoObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          loadLazyVideo(entry.target);
+          videoObserver.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: '320px 0px' });
+    lazyVideos.forEach(function (video) { videoObserver.observe(video); });
+  } else {
+    lazyVideos.forEach(loadLazyVideo);
+  }
+
   /* ---------- 滚动揭示动画 ---------- */
   const reveals = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window) {

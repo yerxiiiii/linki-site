@@ -91,7 +91,10 @@
   <main>
     <!-- ===== Hero 视频区（全屏叠标题） ===== -->
     <section class="hero" id="hero">
-      <video class="hero__video" src="17772587791866454_20260828_091709_Seedance_2.0.mp4" autoplay muted loop playsinline></video>
+      <video class="hero__video" autoplay muted loop playsinline preload="metadata" poster="assets/optimized/hero-091709-poster.webp">
+        <source src="assets/optimized/hero-091709.webm" type="video/webm" />
+        <source src="assets/optimized/hero-091709.mp4" type="video/mp4" />
+      </video>
       <div class="hero__scrim"></div>
       <div class="container hero__content">
         <span class="hero__eyebrow reveal">桌面上的一只小生命</span>
@@ -117,8 +120,9 @@
 
           <article class="highlight highlight--seasons reveal">
             <div class="highlight__media highlight__media--2">
-              <video class="highlight__video" autoplay muted loop playsinline preload="metadata" aria-label="灵奇随四季变换的场景视频">
-                <source src="17772587791866454_20260827_021345_Seedance_2.0.mp4" type="video/mp4" />
+              <video class="highlight__video" autoplay muted loop playsinline preload="none" poster="assets/optimized/seasons-021345-poster.webp" data-lazy-video aria-label="灵奇随四季变换的场景视频">
+                <source data-src="assets/optimized/seasons-021345.webm" type="video/webm" />
+                <source data-src="assets/optimized/seasons-021345.mp4" type="video/mp4" />
               </video>
               <span class="highlight__badge">
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -136,8 +140,9 @@
 
           <article class="highlight highlight--signal reveal">
             <div class="highlight__media highlight__media--1">
-              <video class="highlight__video" autoplay muted loop playsinline preload="metadata" aria-label="毫米波感知桌面在场的视频">
-                <source src="17772587791866454_20260827_165227_Seedance_2.0.mp4" type="video/mp4" />
+              <video class="highlight__video" autoplay muted loop playsinline preload="none" poster="assets/optimized/signal-165227-poster.webp" data-lazy-video aria-label="毫米波感知桌面在场的视频">
+                <source data-src="assets/optimized/signal-165227.webm" type="video/webm" />
+                <source data-src="assets/optimized/signal-165227.mp4" type="video/mp4" />
               </video>
               <span class="highlight__badge">
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
@@ -166,8 +171,9 @@
               <p class="highlight__note">不需要学习规则，也没有等待进度。</p>
             </div>
             <div class="highlight__media highlight__media--3">
-              <video class="highlight__video" autoplay muted loop playsinline preload="metadata" aria-label="手指触碰后灵奇随机反应的视频">
-                <source src="17772587791866454_20260827_025201_Seedance_2.0.mp4" type="video/mp4" />
+              <video class="highlight__video" autoplay muted loop playsinline preload="none" poster="assets/optimized/touch-025201-poster.webp" data-lazy-video aria-label="手指触碰后灵奇随机反应的视频">
+                <source data-src="assets/optimized/touch-025201.webm" type="video/webm" />
+                <source data-src="assets/optimized/touch-025201.mp4" type="video/mp4" />
               </video>
               <span class="highlight__badge">
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -191,13 +197,13 @@
             </div>
             <div class="module-showcase__rail" id="moduleShowcase" tabindex="0" aria-label="可左右滑动浏览的真实使用场景">
               <figure class="module-showcase__slide">
-                <img src="20260827-215441.png" alt="夜里加班，男生伸手逗了逗桌上的灵奇" />
+                <img src="assets/optimized/scenario-night.webp" alt="夜里加班，男生伸手逗了逗桌上的灵奇" loading="lazy" decoding="async" />
               </figure>
               <figure class="module-showcase__slide">
-                <img src="i2i_20260826_081412_22aa4f9093.png" alt="办公桌前专注工作，灵奇安静陪在一旁" />
+                <img src="assets/optimized/scenario-desk-work.webp" alt="办公桌前专注工作，灵奇安静陪在一旁" loading="lazy" decoding="async" />
               </figure>
               <figure class="module-showcase__slide">
-                <img src="interact_touch_wake.png" alt="用户轻触灵奇，屏内仓鼠醒来回应" />
+                <img src="assets/optimized/scenario-touch-wake.webp" alt="用户轻触灵奇，屏内仓鼠醒来回应" loading="lazy" decoding="async" />
               </figure>
             </div>
             <div class="module-showcase__body">
@@ -265,10 +271,10 @@
         <div class="feature__grid">
           <div class="feature__visual">
             <!-- 每块对应左侧图片，替换 <img> 即可 -->
-            <div class="feature__img is-active" data-panel="0"><img src="assets/ft-busy.png" alt="仓鼠在灵奇里跑轮健身" /></div>
-            <div class="feature__img" data-panel="1"><img src="i2i_20260826_081412_22aa4f9093.png" alt="用户专注工作，仓鼠在灵奇里安静生活" /></div>
-            <div class="feature__img" data-panel="2"><img src="i2i_20260827_011643_3d3903fa65.png" alt="触碰触发随机反应" /></div>
-            <div class="feature__img" data-panel="3"><img src="assets/roles-grid.png" alt="可扩展的角色：熊猫、狐狸、柴犬、小猪" /></div>
+            <div class="feature__img is-active" data-panel="0"><img src="assets/optimized/ft-busy.webp" alt="仓鼠在灵奇里跑轮健身" loading="lazy" decoding="async" /></div>
+            <div class="feature__img" data-panel="1"><img src="assets/optimized/scenario-desk-work.webp" alt="用户专注工作，仓鼠在灵奇里安静生活" loading="lazy" decoding="async" /></div>
+            <div class="feature__img" data-panel="2"><img src="assets/optimized/feature-touch.webp" alt="触碰触发随机反应" loading="lazy" decoding="async" /></div>
+            <div class="feature__img" data-panel="3"><img src="assets/optimized/roles-grid.webp" alt="可扩展的角色：熊猫、狐狸、柴犬、小猪" loading="lazy" decoding="async" /></div>
           </div>
           <div class="accordion" id="accordion">
             <div class="accordion__item is-open" data-index="0">
