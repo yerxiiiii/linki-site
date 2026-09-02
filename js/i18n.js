@@ -62,6 +62,8 @@
     },
     'highlight3.videoAria': { en: 'Video of Linki reacting randomly after a finger touch', zh: '手指触碰后灵奇随机反应的视频' },
 
+    'highlight4.kicker': { en: '04 / Magnetic modules', zh: '04 / 磁吸换装' },
+
     'module.controlsAria': { en: 'Switch scenes', zh: '使用场景切换' },
     'module.prevAria': { en: 'Previous scene', zh: '查看上一个场景' },
     'module.nextAria': { en: 'Next scene', zh: '查看下一个场景' },
