@@ -49,54 +49,19 @@
       </a>
 
       <nav class="nav" id="nav" aria-label="主导航">
-        <a href="index.html" class="nav__link" aria-current="page">首页</a>
-        <div class="nav__group">
-          <button class="nav__toggle" type="button" aria-haspopup="true" aria-expanded="false">
-            功能
-            <svg class="nav__chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-          <div class="nav__menu">
-            <a href="seasons.html" class="nav__menu-link">场景同步</a>
-            <a href="privacy.html" class="nav__menu-link">更安心的陪伴</a>
-            <a href="touch.html" class="nav__menu-link">每一次触碰</a>
-          </div>
-        </div>
-        <a href="#faq" class="nav__link">关于</a>
+        <a href="#" class="nav__link">首页</a>
+        <a href="#intro" class="nav__link">功能</a>
+        <a href="#specs" class="nav__link">规格</a>
         <a href="#newsletter" class="nav__link">联系我们</a>
       </nav>
 
       <div class="header__actions">
-        <button class="icon-btn" aria-label="搜索">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
-        </button>
-        <button class="icon-btn" aria-label="账户">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
-        </button>
-        <button class="icon-btn icon-btn--cart" id="cartToggle" aria-label="购物车">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M6 6L5 2H2"/></svg>
-          <span class="cart-count">0</span>
-        </button>
         <button class="hamburger" id="hamburger" aria-label="菜单" aria-expanded="false">
           <span></span><span></span><span></span>
         </button>
       </div>
     </div>
   </header>
-
-  <!-- ===== 购物车抽屉 Cart Drawer ===== -->
-  <div class="drawer-overlay" id="drawerOverlay"></div>
-  <aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
-    <div class="cart-drawer__head">
-      <h3>购物车</h3>
-      <button class="icon-btn" id="cartClose" aria-label="关闭">✕</button>
-    </div>
-    <div class="cart-drawer__body">
-      <p class="cart-empty">购物车还是空的～</p>
-    </div>
-    <div class="cart-drawer__foot">
-      <button class="btn btn--accent btn--block">去结算</button>
-    </div>
-  </aside>
 
   <main>
     <!-- ===== Hero 视频区（全屏叠标题） ===== -->
@@ -125,7 +90,7 @@
             <span class="section-eyebrow">系统能力</span>
             <h2 class="section-title">它不需要你的时间<br />也能读懂此刻</h2>
           </div>
-          <p class="section-head__copy">Linki 将环境感知、场景同步与即时反馈收进一台桌面设备里。技术退到背景，留给你的只有一段轻松的陪伴。</p>
+          <p class="section-head__copy">环境感知、场景同步与即时反馈，收进一台桌面设备里。</p>
         </div>
         <div class="highlights__grid">
 
@@ -145,9 +110,6 @@
                 <span class="feature-kicker">01 / 场景同步</span>
                 <h3>和你共享同一片四季</h3>
                 <p>时间、天气与季节的变化，都映射进它的屏内世界。</p>
-                <a href="seasons.html" class="link-more">了解更多
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-                </a>
               </div>
             </div>
           </article>
@@ -170,9 +132,6 @@
               <span class="feature-kicker">02 / 更安心的陪伴</span>
               <h3>桌上多一个伙伴，不多一只眼睛</h3>
               <p>感知你的靠近与停留，不用摄像头、不留任何影像。</p>
-              <a href="privacy.html" class="link-more">了解更多
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-              </a>
             </div>
           </article>
 
@@ -181,9 +140,6 @@
               <span class="feature-kicker">03 / 即时反馈</span>
               <h3>每一次触碰，都不重复</h3>
               <p>触控不是命令，而是一次轻量的对话，回应始终保留一点未知。</p>
-              <a href="touch.html" class="link-more">了解更多
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-              </a>
             </div>
             <div class="highlight__media highlight__media--3">
               <video class="highlight__video" autoplay muted loop playsinline preload="none" poster="assets/optimized/touch-025201-poster.webp" data-lazy-video aria-label="手指触碰后灵奇随机反应的视频">
@@ -266,10 +222,40 @@
     <section class="newsletter" id="newsletter">
       <div class="container newsletter__inner">
         <h2 class="reveal">加入灵奇的世界</h2>
-        <p class="reveal">订阅获取最新动态与专属优惠。</p>
-        <form class="newsletter__form reveal" id="newsletterForm">
-          <input type="email" placeholder="输入你的邮箱" required />
-          <button type="submit" class="btn btn--accent">订阅</button>
+        <p class="reveal">留下联系方式，我们会把新品进展、试用名额和合作信息同步给你。</p>
+        <form class="newsletter__form reveal" id="newsletterForm" novalidate data-submit-label="提交" data-loading-label="提交中…">
+          <label class="form-field">
+            <span>姓名</span>
+            <input type="text" name="name" placeholder="你的姓名" autocomplete="name" required maxlength="50" />
+          </label>
+          <label class="form-field">
+            <span>邮箱</span>
+            <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+          </label>
+          <label class="form-field">
+            <span>微信 / 电话</span>
+            <input type="text" name="contact" placeholder="选填，方便进一步联系" autocomplete="tel" maxlength="80" />
+          </label>
+          <label class="form-field">
+            <span>关注方向</span>
+            <select name="intent" required>
+              <option value="">请选择</option>
+              <option value="preorder">新品预订</option>
+              <option value="experience">试用体验</option>
+              <option value="partnership">渠道 / 商务合作</option>
+              <option value="media">媒体咨询</option>
+              <option value="other">其他</option>
+            </select>
+          </label>
+          <label class="form-field form-field--wide">
+            <span>留言</span>
+            <textarea name="message" rows="4" placeholder="想了解的问题、使用场景或合作想法" maxlength="500"></textarea>
+          </label>
+          <input class="honeypot" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <div class="newsletter__submit">
+            <button type="submit" class="btn btn--accent">提交</button>
+            <p class="form-status" id="newsletterStatus" aria-live="polite"></p>
+          </div>
         </form>
       </div>
     </section>
@@ -288,8 +274,8 @@
       <div class="footer__col">
         <h3>产品</h3>
         <a href="#intro">灵奇</a>
-        <a href="seasons.html">场景同步</a>
-        <a href="privacy.html">更安心的陪伴</a>
+        <a href="#intro">功能</a>
+        <a href="#specs">规格</a>
       </div>
       <div class="footer__col">
         <h3>支持</h3>

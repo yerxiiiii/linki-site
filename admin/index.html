@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Linki 线索看板</title>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <style>
+      :root {
+        --bg: #f6f1e8;
+        --panel: #ffffff;
+        --panel-soft: #fbf7f0;
+        --ink: #3d2b1f;
+        --muted: #806f61;
+        --line: rgba(61, 43, 31, 0.14);
+        --accent: #7fb69a;
+        --accent-dark: #4f806a;
+        --danger: #b45a4f;
+        --danger-dark: #933d34;
+        --sidebar: #2d231c;
+        --sidebar-muted: rgba(251, 247, 240, 0.66);
+      }
+
+      * { box-sizing: border-box; }
+      html, body { min-height: 100%; margin: 0; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        line-height: 1.6;
+      }
+      button, input { font: inherit; }
+      a { color: inherit; text-decoration: none; }
+      button { cursor: pointer; }
+      .layout { min-height: 100vh; display: grid; grid-template-columns: 224px minmax(0, 1fr); }
+      .sidebar {
+        background: var(--sidebar);
+        color: #fff;
+        padding: 22px 16px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+      }
+      .brand { display: flex; align-items: center; gap: 10px; padding: 0 8px 24px; font-weight: 800; }
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        background: url("/assets/linki-mark.svg") center / contain no-repeat;
+        flex: 0 0 auto;
+      }
+      .nav { display: grid; gap: 8px; }
+      .nav-item {
+        border-radius: 8px;
+        padding: 10px 12px;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+        font-weight: 700;
+      }
+      .nav-note { color: var(--sidebar-muted); font-size: 13px; padding: 10px 12px; }
+
+      .main { min-width: 0; }
+      .topbar {
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 28px;
+        background: rgba(251, 247, 240, 0.9);
+        border-bottom: 1px solid var(--line);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        backdrop-filter: blur(12px);
+      }
+      .crumb { color: var(--muted); font-size: 14px; }
+      .status-dot {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--accent-dark);
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .status-dot::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+      .content { padding: 28px; }
+      .page-head { display: flex; justify-content: space-between; gap: 20px; align-items: end; margin-bottom: 22px; }
+      h1 { margin: 0; font-size: clamp(24px, 3vw, 34px); line-height: 1.2; }
+      .page-head p { margin: 8px 0 0; color: var(--muted); }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+      .stat {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 18px;
+      }
+      .stat span { color: var(--muted); font-size: 13px; }
+      .stat strong { display: block; margin-top: 6px; font-size: 30px; line-height: 1; }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .panel-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+        border-bottom: 1px solid var(--line);
+      }
+      .panel-head h2 { margin: 0; font-size: 17px; }
+      .actions { margin-left: auto; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel-soft);
+        color: var(--ink);
+        padding: 0 14px;
+        font-weight: 700;
+      }
+      .btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-dark); }
+      .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+      .btn-primary:hover:not(:disabled) { background: var(--accent-dark); color: #fff; }
+      .btn-danger { background: var(--danger); color: #fff; border-color: var(--danger); }
+      .btn-danger:hover:not(:disabled) { background: var(--danger-dark); color: #fff; }
+      .btn:disabled { opacity: 0.45; cursor: default; }
+
+      .table-wrap { overflow-x: auto; }
+      table { width: 100%; min-width: 980px; border-collapse: collapse; table-layout: fixed; }
+      th, td {
+        border-bottom: 1px solid var(--line);
+        padding: 13px 14px;
+        text-align: left;
+        vertical-align: top;
+        font-size: 14px;
+      }
+      th {
+        background: var(--panel-soft);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+      }
+      tr:last-child td { border-bottom: 0; }
+      tbody tr:hover { background: #fffaf2; }
+      input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent-dark); }
+      .col-check { width: 44px; }
+      .col-time { width: 160px; }
+      .col-name { width: 120px; }
+      .col-email { width: 220px; }
+      .col-contact { width: 160px; }
+      .col-intent { width: 136px; }
+      .col-lang { width: 76px; }
+      .clip {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .message-btn {
+        display: block;
+        width: 100%;
+        border: 0;
+        padding: 0;
+        background: none;
+        color: var(--ink);
+        text-align: left;
+      }
+      .message-btn:hover { color: var(--accent-dark); }
+      .tag {
+        display: inline-flex;
+        border-radius: 8px;
+        background: #e9f2ed;
+        color: var(--accent-dark);
+        padding: 3px 8px;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .muted { color: var(--muted); }
+      .empty, .loading { padding: 46px 20px; text-align: center; color: var(--muted); }
+
+      .pager {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 16px;
+        border-top: 1px solid var(--line);
+      }
+      .pager[hidden] { display: none; }
+      .pager .total { margin-right: auto; color: var(--muted); font-size: 13px; }
+      .pager button {
+        min-width: 34px;
+        height: 34px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        color: var(--ink);
+      }
+      .pager button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+      .pager button:disabled { opacity: 0.45; cursor: default; }
+
+      dialog {
+        width: min(92vw, 520px);
+        border: 0;
+        border-radius: 8px;
+        padding: 0;
+        box-shadow: 0 24px 64px rgba(45, 35, 28, 0.28);
+      }
+      dialog::backdrop { background: rgba(45, 35, 28, 0.42); }
+      .dialog-card { padding: 22px; }
+      .dialog-card h3 { margin: 0 0 12px; }
+      .dialog-card p { white-space: pre-wrap; word-break: break-word; margin: 0; color: var(--muted); }
+      .dialog-actions { display: flex; justify-content: flex-end; margin-top: 18px; }
+
+      @media (max-width: 860px) {
+        .layout { grid-template-columns: 1fr; }
+        .sidebar { position: static; height: auto; }
+        .content, .topbar { padding-left: 18px; padding-right: 18px; }
+        .stats { grid-template-columns: 1fr; }
+        .page-head { display: block; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>Linki 后台</span>
+        </div>
+        <nav class="nav" aria-label="后台导航">
+          <div class="nav-item">线索数据</div>
+          <div class="nav-note">用于查看官网表单收集到的真实提交。</div>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <span class="crumb">内部看板 / 线索数据</span>
+          <span class="status-dot">服务运行中</span>
+        </header>
+
+        <div class="content">
+          <div class="page-head">
+            <div>
+              <h1>线索数据</h1>
+              <p>来自官网“联系我们”表单的提交记录。</p>
+            </div>
+          </div>
+
+          <section class="stats" aria-label="数据概览">
+            <div class="stat"><span>总提交数</span><strong id="kpi-total">0</strong></div>
+            <div class="stat"><span>含留言</span><strong id="kpi-message">0</strong></div>
+            <div class="stat"><span>今日新增</span><strong id="kpi-today">0</strong></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <h2>提交列表</h2>
+              <div class="actions">
+                <button class="btn btn-danger" id="delete-btn" type="button" disabled>删除</button>
+                <a class="btn btn-primary" href="/api/leads/export.csv" id="export-link">导出 CSV</a>
+                <button class="btn" id="refresh-btn" type="button">刷新</button>
+              </div>
+            </div>
+            <div class="table-wrap" id="table-wrap">
+              <div class="loading">加载中...</div>
+            </div>
+            <div class="pager" id="pager" hidden></div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <dialog id="message-dialog">
+      <div class="dialog-card">
+        <h3>留言详情</h3>
+        <p id="message-body"></p>
+        <div class="dialog-actions">
+          <button class="btn btn-primary" id="dialog-close" type="button">关闭</button>
+        </div>
+      </div>
+    </dialog>
+
+    <script>
+      const PAGE_SIZE = 20;
+      const selectedIds = new Set();
+      let currentPage = 1;
+      let totalCount = 0;
+
+      const tableWrap = document.getElementById("table-wrap");
+      const pager = document.getElementById("pager");
+      const deleteBtn = document.getElementById("delete-btn");
+      const refreshBtn = document.getElementById("refresh-btn");
+      const dialog = document.getElementById("message-dialog");
+      const messageBody = document.getElementById("message-body");
+
+      const esc = (value) =>
+        String(value ?? "").replace(/[&<>"']/g, (char) =>
+          ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+
+      function updateDeleteState() {
+        deleteBtn.disabled = selectedIds.size === 0;
+        deleteBtn.textContent = selectedIds.size ? `删除 (${selectedIds.size})` : "删除";
+      }
+
+      function pageWindow(current, pages) {
+        const set = new Set([1, pages, current, current - 1, current + 1]);
+        const ordered = [...set].filter((n) => n >= 1 && n <= pages).sort((a, b) => a - b);
+        const out = [];
+        for (let i = 0; i < ordered.length; i += 1) {
+          if (i > 0 && ordered[i] - ordered[i - 1] > 1) out.push("...");
+          out.push(ordered[i]);
+        }
+        return out;
+      }
+
+      function renderPager() {
+        const pages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+        pager.hidden = totalCount <= PAGE_SIZE;
+        const button = (page, text, options = {}) =>
+          `<button data-page="${page}" ${options.active ? 'class="active"' : ""} ${options.disabled ? "disabled" : ""}>${
+            text || page
+          }</button>`;
+        let html = `<span class="total">共 ${totalCount} 条 · 第 ${currentPage}/${pages} 页</span>`;
+        if (pages > 1) {
+          html += button(currentPage - 1, "上一页", { disabled: currentPage <= 1 });
+          pageWindow(currentPage, pages).forEach((page) => {
+            html += page === "..." ? "<span>...</span>" : button(page, String(page), { active: page === currentPage });
+          });
+          html += button(currentPage + 1, "下一页", { disabled: currentPage >= pages });
+        }
+        pager.innerHTML = html;
+      }
+
+      function renderTable(items) {
+        if (!totalCount) {
+          tableWrap.innerHTML = '<div class="empty">还没有收到表单提交。</div>';
+          pager.hidden = true;
+          return;
+        }
+
+        const rows = items.map((item) => {
+          const message = item.message || "";
+          const messageHtml = message
+            ? `<button class="message-btn clip" type="button" data-message="${esc(message)}">${esc(message)}</button>`
+            : '<span class="muted">-</span>';
+          return `
+            <tr>
+              <td class="col-check"><input type="checkbox" data-id="${item.id}" /></td>
+              <td class="col-time muted">${esc(item.createdAt)}</td>
+              <td class="col-name clip" title="${esc(item.name)}">${esc(item.name)}</td>
+              <td class="col-email clip" title="${esc(item.email)}">${esc(item.email)}</td>
+              <td class="col-contact clip" title="${esc(item.contact)}">${item.contact ? esc(item.contact) : '<span class="muted">-</span>'}</td>
+              <td class="col-intent"><span class="tag">${esc(item.intentLabel)}</span></td>
+              <td>${messageHtml}</td>
+              <td class="col-lang">${esc(item.lang || "-")}</td>
+            </tr>`;
+        }).join("");
+
+        tableWrap.innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th class="col-check"><input type="checkbox" id="select-all" /></th>
+                <th class="col-time">提交时间</th>
+                <th class="col-name">姓名</th>
+                <th class="col-email">邮箱</th>
+                <th class="col-contact">联系方式</th>
+                <th class="col-intent">关注方向</th>
+                <th>留言</th>
+                <th class="col-lang">语言</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>`;
+
+        const selectAll = document.getElementById("select-all");
+        const boxes = [...tableWrap.querySelectorAll('tbody input[type="checkbox"]')];
+        selectAll.addEventListener("change", () => {
+          boxes.forEach((box) => {
+            box.checked = selectAll.checked;
+            const id = Number(box.dataset.id);
+            if (box.checked) selectedIds.add(id);
+            else selectedIds.delete(id);
+          });
+          updateDeleteState();
+        });
+
+        boxes.forEach((box) => {
+          box.addEventListener("change", () => {
+            const id = Number(box.dataset.id);
+            if (box.checked) selectedIds.add(id);
+            else selectedIds.delete(id);
+            selectAll.checked = boxes.length > 0 && boxes.every((item) => item.checked);
+            updateDeleteState();
+          });
+        });
+
+        tableWrap.querySelectorAll(".message-btn").forEach((button) => {
+          button.addEventListener("click", () => {
+            messageBody.textContent = button.dataset.message || "";
+            if (typeof dialog.showModal === "function") dialog.showModal();
+            else dialog.setAttribute("open", "");
+          });
+        });
+
+        renderPager();
+      }
+
+      async function loadStats() {
+        const stats = await fetch("/api/stats").then((res) => res.json());
+        document.getElementById("kpi-total").textContent = stats.total || 0;
+        document.getElementById("kpi-message").textContent = stats.withMessage || 0;
+        document.getElementById("kpi-today").textContent = stats.today || 0;
+      }
+
+      async function load(page = currentPage) {
+        selectedIds.clear();
+        updateDeleteState();
+        tableWrap.innerHTML = '<div class="loading">加载中...</div>';
+        refreshBtn.disabled = true;
+        try {
+          const data = await fetch(`/api/leads?page=${page}&size=${PAGE_SIZE}`).then((res) => res.json());
+          totalCount = data.total || 0;
+          currentPage = data.page || page;
+          renderTable(data.items || []);
+          loadStats();
+        } catch {
+          tableWrap.innerHTML = '<div class="empty">加载失败，请刷新重试。</div>';
+          pager.hidden = true;
+        } finally {
+          refreshBtn.disabled = false;
+        }
+      }
+
+      async function deleteSelected() {
+        const ids = [...selectedIds];
+        if (!ids.length) return;
+        const ok = window.confirm(`确定删除选中的 ${ids.length} 条数据吗？此操作不可恢复。`);
+        if (!ok) return;
+        const response = await fetch("/api/leads", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ids }),
+        });
+        if (!response.ok) {
+          window.alert("删除失败，请稍后再试。");
+          return;
+        }
+        const nextTotal = Math.max(0, totalCount - ids.length);
+        const maxPage = Math.max(1, Math.ceil(nextTotal / PAGE_SIZE));
+        load(Math.min(currentPage, maxPage));
+      }
+
+      pager.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-page]");
+        if (!button || button.disabled) return;
+        const page = Number(button.dataset.page);
+        if (page > 0) load(page);
+      });
+
+      refreshBtn.addEventListener("click", () => load(currentPage));
+      deleteBtn.addEventListener("click", deleteSelected);
+      document.getElementById("dialog-close").addEventListener("click", () => {
+        if (dialog.open && typeof dialog.close === "function") dialog.close();
+        else dialog.removeAttribute("open");
+      });
+
+      load(1);
+    </script>
+  </body>
+</html>

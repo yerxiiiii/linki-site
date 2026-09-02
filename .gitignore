@@ -2,3 +2,8 @@
 .claude/
 .agents/
 skills/
+.env
+/data/
+*.db
+*.db-shm
+*.db-wal

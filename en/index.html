@@ -49,54 +49,19 @@
       </a>
 
       <nav class="nav" id="nav" aria-label="Primary navigation">
-        <a href="index.html" class="nav__link" aria-current="page">Home</a>
-        <div class="nav__group">
-          <button class="nav__toggle" type="button" aria-haspopup="true" aria-expanded="false">
-            Features
-            <svg class="nav__chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-          <div class="nav__menu">
-            <a href="seasons.html" class="nav__menu-link">Scene sync</a>
-            <a href="privacy.html" class="nav__menu-link">Peace of mind</a>
-            <a href="touch.html" class="nav__menu-link">Every touch</a>
-          </div>
-        </div>
-        <a href="#faq" class="nav__link">About</a>
+        <a href="#" class="nav__link">Home</a>
+        <a href="#intro" class="nav__link">Features</a>
+        <a href="#specs" class="nav__link">Specs</a>
         <a href="#newsletter" class="nav__link">Contact</a>
       </nav>
 
       <div class="header__actions">
-        <button class="icon-btn" aria-label="Search">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
-        </button>
-        <button class="icon-btn" aria-label="Account">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
-        </button>
-        <button class="icon-btn icon-btn--cart" id="cartToggle" aria-label="Cart">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M6 6L5 2H2"/></svg>
-          <span class="cart-count">0</span>
-        </button>
         <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
           <span></span><span></span><span></span>
         </button>
       </div>
     </div>
   </header>
-
-  <!-- ===== Cart Drawer ===== -->
-  <div class="drawer-overlay" id="drawerOverlay"></div>
-  <aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
-    <div class="cart-drawer__head">
-      <h3>Your Cart</h3>
-      <button class="icon-btn" id="cartClose" aria-label="Close">✕</button>
-    </div>
-    <div class="cart-drawer__body">
-      <p class="cart-empty">Your cart is empty~</p>
-    </div>
-    <div class="cart-drawer__foot">
-      <button class="btn btn--accent btn--block">Checkout</button>
-    </div>
-  </aside>
 
   <main>
     <!-- ===== Hero video (full-screen with overlaid title) ===== -->
@@ -125,7 +90,7 @@
             <span class="section-eyebrow">System capabilities</span>
             <h2 class="section-title">It doesn't need your time<br />yet it reads the moment</h2>
           </div>
-          <p class="section-head__copy">Linki packs environmental sensing, scene sync and instant response into a single desktop device. The technology fades into the background, leaving you with nothing but easy company.</p>
+          <p class="section-head__copy">Environmental sensing, scene sync and instant response—packed into a single desktop device.</p>
         </div>
         <div class="highlights__grid">
 
@@ -145,9 +110,6 @@
                 <span class="feature-kicker">01 / Scene sync</span>
                 <h3>Sharing the same seasons with you</h3>
                 <p>Time, weather and season all map into the world inside its screen.</p>
-                <a href="seasons.html" class="link-more">Learn more
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-                </a>
               </div>
             </div>
           </article>
@@ -170,9 +132,6 @@
               <span class="feature-kicker">02 / Peace of mind</span>
               <h3>A companion on your desk—not a camera</h3>
               <p>It senses your presence and lingering—no camera, no images ever stored.</p>
-              <a href="privacy.html" class="link-more">Learn more
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-              </a>
             </div>
           </article>
 
@@ -181,9 +140,6 @@
               <span class="feature-kicker">03 / Instant response</span>
               <h3>No two touches are alike</h3>
               <p>A touch isn't a command but a light conversation—always keeping a little of the unknown.</p>
-              <a href="touch.html" class="link-more">Learn more
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-              </a>
             </div>
             <div class="highlight__media highlight__media--3">
               <video class="highlight__video" autoplay muted loop playsinline preload="none" poster="../assets/optimized/touch-025201-poster.webp" data-lazy-video aria-label="Video of Linki reacting randomly after a finger touch">
@@ -266,10 +222,40 @@
     <section class="newsletter" id="newsletter">
       <div class="container newsletter__inner">
         <h2 class="reveal">Join the world of Linki</h2>
-        <p class="reveal">Subscribe for the latest news and exclusive offers.</p>
-        <form class="newsletter__form reveal" id="newsletterForm">
-          <input type="email" placeholder="Enter your email" required />
-          <button type="submit" class="btn btn--accent">Subscribe</button>
+        <p class="reveal">Leave your details and we will share product updates, trial access and partnership notes.</p>
+        <form class="newsletter__form reveal" id="newsletterForm" novalidate data-submit-label="Submit" data-loading-label="Submitting…">
+          <label class="form-field">
+            <span>Name</span>
+            <input type="text" name="name" placeholder="Your name" autocomplete="name" required maxlength="50" />
+          </label>
+          <label class="form-field">
+            <span>Email</span>
+            <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+          </label>
+          <label class="form-field">
+            <span>Contact</span>
+            <input type="text" name="contact" placeholder="Optional phone or messaging ID" autocomplete="tel" maxlength="80" />
+          </label>
+          <label class="form-field">
+            <span>Interest</span>
+            <select name="intent" required>
+              <option value="">Select one</option>
+              <option value="preorder">Preorder</option>
+              <option value="experience">Trial experience</option>
+              <option value="partnership">Channel / partnership</option>
+              <option value="media">Media inquiry</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+          <label class="form-field form-field--wide">
+            <span>Message</span>
+            <textarea name="message" rows="4" placeholder="Questions, use cases or collaboration ideas" maxlength="500"></textarea>
+          </label>
+          <input class="honeypot" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <div class="newsletter__submit">
+            <button type="submit" class="btn btn--accent">Submit</button>
+            <p class="form-status" id="newsletterStatus" aria-live="polite"></p>
+          </div>
         </form>
       </div>
     </section>
@@ -288,8 +274,8 @@
       <div class="footer__col">
         <h3>Product</h3>
         <a href="#intro">Linki</a>
-        <a href="seasons.html">Scene sync</a>
-        <a href="privacy.html">Peace of mind</a>
+        <a href="#intro">Features</a>
+        <a href="#specs">Specs</a>
       </div>
       <div class="footer__col">
         <h3>Support</h3>
