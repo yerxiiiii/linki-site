@@ -77,10 +77,11 @@
         let offset = i - earActive;
         if (offset > half) offset -= total;
         if (offset < -half) offset += total;
-        const angle = offset * 13;
-        const y = Math.abs(offset) * 22;
+        const angle = offset * 15;
+        const x = offset * 78;
+        const y = Math.abs(offset) * 18;
         const scale = offset === 0 ? 1 : Math.max(0.78, 1 - Math.abs(offset) * 0.1);
-        card.style.transform = 'translate(-50%, -50%) rotate(' + angle + 'deg) translateY(' + y + 'px) scale(' + scale + ')';
+        card.style.transform = 'translate(-50%, -50%) translateX(' + x + 'px) rotate(' + angle + 'deg) translateY(' + y + 'px) scale(' + scale + ')';
         card.style.zIndex = String(10 - Math.abs(offset));
         card.style.opacity = String(Math.max(0.45, 1 - Math.abs(offset) * 0.18));
         card.classList.toggle('is-active', offset === 0);

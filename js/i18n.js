@@ -104,7 +104,7 @@
       zh: '顶部磁吸模块连接实体造型与数字角色，可持续扩展。',
     },
 
-    'modules.title': { en: 'Five expressions, one magnetic snap', zh: '五种表情，磁吸即换' },
+    'modules.title': { en: 'Many characters, one magnetic snap', zh: '多种角色，磁吸即换' },
     'modules.copy': {
       en: "Swap the ear module and the on-screen character changes with it. Tap a card to draw it to the front.",
       zh: '换上不同的耳朵模块，屏幕里的角色也跟着变身。点一张卡牌，把它抽到最前面。',
