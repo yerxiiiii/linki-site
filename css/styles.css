@@ -137,6 +137,16 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .header__actions { display: flex; align-items: center; gap: 8px; }
 
+.lang-toggle {
+  height: 38px; padding: 0 16px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--border-strong);
+  font-weight: 600; font-size: 13px;
+  color: var(--text);
+  transition: border-color .2s var(--ease), background .2s var(--ease);
+}
+.lang-toggle:hover { border-color: var(--ink); background: rgba(61,43,31,.04); }
+
 .hamburger { display: none; flex-direction: column; gap: 5px; width: 42px; height: 42px; align-items: center; justify-content: center; }
 .hamburger span { width: 22px; height: 2px; background: var(--text); transition: .3s var(--ease); }
 .hamburger.is-active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }

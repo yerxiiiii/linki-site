@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Linki - A Brand New Cyber Pet</title>
-  <meta name="description" content="Linki - 一种全新的赛博陪伴宠物，会感知、会回应、会陪伴。" />
+  <meta name="description" content="Linki - a brand new cyber companion pet that senses, responds and keeps you company." />
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preload" as="image" href="assets/optimized/hero-091709-poster.webp" fetchpriority="high" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=20260828-fast2" />
+  <link rel="stylesheet" href="css/styles.css?v=20260902-i18n" />
 </head>
 <body>
 
-  <!-- ===== 公告条 Announcement Bar ===== -->
+  <!-- ===== Announcement Bar ===== -->
   <div class="announcement" aria-hidden="true">
     <div class="announcement__track">
       <div class="announcement__set">
@@ -40,7 +40,7 @@
     </div>
   </div>
 
-  <!-- ===== 顶部导航 Sticky Header ===== -->
+  <!-- ===== Sticky Header ===== -->
   <header class="header" id="header">
     <div class="container header__inner">
       <a href="#" class="header__logo" aria-label="Linki">
@@ -48,15 +48,16 @@
         <span class="brand-word">Linki</span>
       </a>
 
-      <nav class="nav" id="nav" aria-label="主导航">
-        <a href="#" class="nav__link">首页</a>
-        <a href="#intro" class="nav__link">功能</a>
-        <a href="#specs" class="nav__link">规格</a>
-        <a href="#newsletter" class="nav__link">联系我们</a>
+      <nav class="nav" id="nav" data-i18n-aria="nav.ariaLabel">
+        <a href="#" class="nav__link" data-i18n="nav.home">Home</a>
+        <a href="#intro" class="nav__link" data-i18n="nav.features">Features</a>
+        <a href="#specs" class="nav__link" data-i18n="nav.specs">Specs</a>
+        <a href="#newsletter" class="nav__link" data-i18n="nav.contact">Contact</a>
       </nav>
 
       <div class="header__actions">
-        <button class="hamburger" id="hamburger" aria-label="菜单" aria-expanded="false">
+        <button class="lang-toggle" id="langToggle" type="button" data-i18n-aria="lang.toggleAria">切换到中文</button>
+        <button class="hamburger" id="hamburger" data-i18n-aria="nav.menuAria" aria-expanded="false">
           <span></span><span></span><span></span>
         </button>
       </div>
@@ -64,7 +65,7 @@
   </header>
 
   <main>
-    <!-- ===== Hero 视频区（全屏叠标题） ===== -->
+    <!-- ===== Hero video (full-screen with overlaid title) ===== -->
     <section class="hero" id="hero">
       <img class="hero__poster" src="assets/optimized/hero-091709-poster.webp" alt="" fetchpriority="high" decoding="async" />
       <video class="hero__video" autoplay muted loop playsinline preload="none" poster="assets/optimized/hero-091709-poster.webp" data-hero-video>
@@ -73,30 +74,30 @@
       </video>
       <div class="hero__scrim"></div>
       <div class="container hero__content">
-        <span class="hero__eyebrow">桌面上的一只小生命</span>
-        <h1 class="hero__title">每一次触摸<br />都是惊喜<br />每一天陪伴<br />都很真实</h1>
-        <p class="hero__sub">没有摄像头，更安心。和你共享同一片四季，用最自然的方式，陪你度过每一天。</p>
+        <span class="hero__eyebrow" data-i18n="hero.eyebrow">A little life on your desk</span>
+        <h1 class="hero__title" data-i18n-html="hero.title">Every touch, a little surprise<br />Every day, real company</h1>
+        <p class="hero__sub" data-i18n="hero.sub">No camera, more peace of mind. It shares the same seasons with you, keeping you company in the most natural way, every single day.</p>
         <div class="hero__cta">
-          <a href="#intro" class="btn btn--accent">立即了解</a>
+          <a href="#intro" class="btn btn--accent" data-i18n="hero.cta">Learn more</a>
         </div>
       </div>
     </section>
 
-    <!-- ===== 三大特性 Highlights ===== -->
+    <!-- ===== Highlights ===== -->
     <section class="highlights" id="intro">
       <div class="container">
         <div class="section-head section-head--intro reveal">
           <div>
-            <span class="section-eyebrow">系统能力</span>
-            <h2 class="section-title">它不需要你的时间<br />也能读懂此刻</h2>
+            <span class="section-eyebrow" data-i18n="intro.eyebrow">System capabilities</span>
+            <h2 class="section-title" data-i18n-html="intro.title">It doesn't need your time<br />yet it reads the moment</h2>
           </div>
-          <p class="section-head__copy">环境感知、场景同步与即时反馈，收进一台桌面设备里。</p>
+          <p class="section-head__copy" data-i18n="intro.copy">Environmental sensing, scene sync and instant response—packed into a single desktop device.</p>
         </div>
         <div class="highlights__grid">
 
           <article class="highlight highlight--seasons reveal">
             <div class="highlight__media highlight__media--2">
-              <video class="highlight__video" autoplay muted loop playsinline preload="none" poster="assets/optimized/seasons-021345-poster.webp" data-lazy-video aria-label="灵奇随四季变换的场景视频">
+              <video class="highlight__video" autoplay muted loop playsinline preload="none" poster="assets/optimized/seasons-021345-poster.webp" data-lazy-video data-i18n-aria="highlight1.videoAria">
                 <source data-src="assets/optimized/seasons-021345.webm" type="video/webm" />
                 <source data-src="assets/optimized/seasons-021345.mp4" type="video/mp4" />
               </video>
@@ -107,16 +108,16 @@
                 </svg>
               </span>
               <div class="highlight__season-copy">
-                <span class="feature-kicker">01 / 场景同步</span>
-                <h3>和你共享同一片四季</h3>
-                <p>时间、天气与季节的变化，都映射进它的屏内世界。</p>
+                <span class="feature-kicker" data-i18n="highlight1.kicker">01 / Scene sync</span>
+                <h3 data-i18n="highlight1.title">Sharing the same seasons with you</h3>
+                <p data-i18n="highlight1.desc">Time, weather and season all map into the world inside its screen.</p>
               </div>
             </div>
           </article>
 
           <article class="highlight highlight--signal reveal">
             <div class="highlight__media highlight__media--1">
-              <video class="highlight__video" autoplay muted loop playsinline preload="none" poster="assets/optimized/signal-165227-poster.webp" data-lazy-video aria-label="毫米波感知桌面在场的视频">
+              <video class="highlight__video" autoplay muted loop playsinline preload="none" poster="assets/optimized/signal-165227-poster.webp" data-lazy-video data-i18n-aria="highlight2.videoAria">
                 <source data-src="assets/optimized/signal-165227.webm" type="video/webm" />
                 <source data-src="assets/optimized/signal-165227.mp4" type="video/mp4" />
               </video>
@@ -129,20 +130,20 @@
               </span>
             </div>
             <div class="highlight__body">
-              <span class="feature-kicker">02 / 更安心的陪伴</span>
-              <h3>桌上多一个伙伴，不多一只眼睛</h3>
-              <p>感知你的靠近与停留，不用摄像头、不留任何影像。</p>
+              <span class="feature-kicker" data-i18n="highlight2.kicker">02 / Peace of mind</span>
+              <h3 data-i18n="highlight2.title">A companion on your desk—not a camera</h3>
+              <p data-i18n="highlight2.desc">It senses your presence and lingering—no camera, no images ever stored.</p>
             </div>
           </article>
 
           <article class="highlight highlight--touch reveal">
             <div class="highlight__body">
-              <span class="feature-kicker">03 / 即时反馈</span>
-              <h3>每一次触碰，都不重复</h3>
-              <p>触控不是命令，而是一次轻量的对话，回应始终保留一点未知。</p>
+              <span class="feature-kicker" data-i18n="highlight3.kicker">03 / Instant response</span>
+              <h3 data-i18n="highlight3.title">No two touches are alike</h3>
+              <p data-i18n="highlight3.desc">A touch isn't a command but a light conversation—always keeping a little of the unknown.</p>
             </div>
             <div class="highlight__media highlight__media--3">
-              <video class="highlight__video" autoplay muted loop playsinline preload="none" poster="assets/optimized/touch-025201-poster.webp" data-lazy-video aria-label="手指触碰后灵奇随机反应的视频">
+              <video class="highlight__video" autoplay muted loop playsinline preload="none" poster="assets/optimized/touch-025201-poster.webp" data-lazy-video data-i18n-aria="highlight3.videoAria">
                 <source data-src="assets/optimized/touch-025201.webm" type="video/webm" />
                 <source data-src="assets/optimized/touch-025201.mp4" type="video/mp4" />
               </video>
@@ -157,29 +158,29 @@
 
           <article class="module-showcase reveal">
             <div class="module-showcase__toolbar">
-              <div class="module-showcase__controls" aria-label="使用场景切换">
-                <button class="module-showcase__control" type="button" data-module-scroll="prev" aria-label="查看上一个场景">
+              <div class="module-showcase__controls" data-i18n-aria="module.controlsAria">
+                <button class="module-showcase__control" type="button" data-module-scroll="prev" data-i18n-aria="module.prevAria">
                   <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                 </button>
-                <button class="module-showcase__control" type="button" data-module-scroll="next" aria-label="查看下一个场景">
+                <button class="module-showcase__control" type="button" data-module-scroll="next" data-i18n-aria="module.nextAria">
                   <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                 </button>
               </div>
             </div>
-            <div class="module-showcase__rail" id="moduleShowcase" tabindex="0" aria-label="可左右滑动浏览的真实使用场景">
+            <div class="module-showcase__rail" id="moduleShowcase" tabindex="0" data-i18n-aria="module.railAria">
               <figure class="module-showcase__slide">
-                <img src="assets/optimized/scenario-night.webp" alt="夜里加班，男生伸手逗了逗桌上的灵奇" loading="lazy" decoding="async" />
+                <img src="assets/optimized/scenario-night.webp" data-i18n-alt="module.slide1Alt" alt="Working late at night, a man reaches out to play with Linki on his desk" loading="lazy" decoding="async" />
               </figure>
               <figure class="module-showcase__slide">
-                <img src="assets/optimized/scenario-desk-work.webp" alt="办公桌前专注工作，灵奇安静陪在一旁" loading="lazy" decoding="async" />
+                <img src="assets/optimized/scenario-desk-work.webp" data-i18n-alt="module.slide2Alt" alt="Focused at the desk, Linki quietly keeps company nearby" loading="lazy" decoding="async" />
               </figure>
               <figure class="module-showcase__slide">
-                <img src="assets/optimized/scenario-touch-wake.webp" alt="用户轻触灵奇，屏内仓鼠醒来回应" loading="lazy" decoding="async" />
+                <img src="assets/optimized/scenario-touch-wake.webp" data-i18n-alt="module.slide3Alt" alt="A user gently touches Linki and the on-screen hamster wakes in response" loading="lazy" decoding="async" />
               </figure>
             </div>
             <div class="module-showcase__body">
-              <h3>它就这样，融进你的日常</h3>
-              <p>工作、发呆、深夜加班——灵奇一直安静地待在桌角。</p>
+              <h3 data-i18n="module.bodyTitle">It just blends into your everyday</h3>
+              <p data-i18n="module.bodyDesc">Working, daydreaming, burning the midnight oil—Linki stays quietly at the corner of your desk.</p>
             </div>
           </article>
 
@@ -187,73 +188,73 @@
       </div>
     </section>
 
-    <!-- ===== 技术规格区 Specs（datasheet 冷科技） ===== -->
+    <!-- ===== Specs (cold-tech datasheet) ===== -->
     <section class="specs" id="specs">
       <div class="container">
         <div class="section-head reveal">
-          <span class="section-eyebrow">冷科技 · 暖内核</span>
-          <h2 class="section-title">看不见的用心</h2>
+          <span class="section-eyebrow" data-i18n="specs.eyebrow">Cool tech · Warm core</span>
+          <h2 class="section-title" data-i18n="specs.title">Care you can't see</h2>
         </div>
         <div class="specs__grid">
 
           <article class="spec reveal">
             <span class="spec__no">SPEC 01</span>
-            <h3>裸眼 3D 立体显示</h3>
-            <p>透明主体内的动态画面自带空间层次，无需佩戴任何设备。</p>
+            <h3 data-i18n="spec1.title">Naked-eye 3D display</h3>
+            <p data-i18n="spec1.desc">Dynamic imagery with real spatial depth inside the transparent body—no glasses needed.</p>
           </article>
 
           <article class="spec reveal">
             <span class="spec__no">SPEC 02</span>
-            <h3>非视觉环境感知</h3>
-            <p>毫米波雷达配合四麦克风阵列感知环境，全程无摄像头。</p>
+            <h3 data-i18n="spec2.title">Non-visual environmental sensing</h3>
+            <p data-i18n="spec2.desc">Millimeter-wave radar with a four-microphone array senses the room—no camera at all.</p>
           </article>
 
           <article class="spec reveal">
             <span class="spec__no">SPEC 03</span>
-            <h3>磁吸角色接口</h3>
-            <p>顶部磁吸模块连接实体造型与数字角色，可持续扩展。</p>
+            <h3 data-i18n="spec3.title">Magnetic character interface</h3>
+            <p data-i18n="spec3.desc">A top magnetic module links the physical form to the digital character, always expandable.</p>
           </article>
 
         </div>
       </div>
     </section>
 
-    <!-- ===== 订阅 Newsletter ===== -->
+    <!-- ===== Newsletter ===== -->
     <section class="newsletter" id="newsletter">
       <div class="container newsletter__inner">
-        <h2 class="reveal">加入灵奇的世界</h2>
-        <p class="reveal">留下联系方式，我们会把新品进展、试用名额和合作信息同步给你。</p>
-        <form class="newsletter__form reveal" id="newsletterForm" novalidate data-submit-label="提交" data-loading-label="提交中…">
+        <h2 class="reveal" data-i18n="newsletter.title">Join the world of Linki</h2>
+        <p class="reveal" data-i18n="newsletter.desc">Leave your details and we will share product updates, trial access and partnership notes.</p>
+        <form class="newsletter__form reveal" id="newsletterForm" novalidate data-submit-label="Submit" data-loading-label="Submitting…">
           <label class="form-field">
-            <span>姓名</span>
-            <input type="text" name="name" placeholder="你的姓名" autocomplete="name" required maxlength="50" />
+            <span data-i18n="form.name">Name</span>
+            <input type="text" name="name" placeholder="Your name" data-i18n-placeholder="form.namePlaceholder" autocomplete="name" required maxlength="50" />
           </label>
           <label class="form-field">
-            <span>邮箱</span>
+            <span data-i18n="form.email">Email</span>
             <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
           </label>
           <label class="form-field">
-            <span>微信 / 电话</span>
-            <input type="text" name="contact" placeholder="选填，方便进一步联系" autocomplete="tel" maxlength="80" />
+            <span data-i18n="form.contact">Contact</span>
+            <input type="text" name="contact" placeholder="Optional phone or messaging ID" data-i18n-placeholder="form.contactPlaceholder" autocomplete="tel" maxlength="80" />
           </label>
           <label class="form-field">
-            <span>关注方向</span>
+            <span data-i18n="form.intent">Interest</span>
             <select name="intent" required>
-              <option value="">请选择</option>
-              <option value="preorder">新品预订</option>
-              <option value="experience">试用体验</option>
-              <option value="partnership">渠道 / 商务合作</option>
-              <option value="media">媒体咨询</option>
-              <option value="other">其他</option>
+              <option value="" data-i18n="form.intentSelect">Select one</option>
+              <option value="preorder" data-i18n="form.intentPreorder">Preorder</option>
+              <option value="experience" data-i18n="form.intentExperience">Trial experience</option>
+              <option value="partnership" data-i18n="form.intentPartnership">Channel / partnership</option>
+              <option value="media" data-i18n="form.intentMedia">Media inquiry</option>
+              <option value="other" data-i18n="form.intentOther">Other</option>
             </select>
           </label>
           <label class="form-field form-field--wide">
-            <span>留言</span>
-            <textarea name="message" rows="4" placeholder="想了解的问题、使用场景或合作想法" maxlength="500"></textarea>
+            <span data-i18n="form.message">Message</span>
+            <textarea name="message" rows="4" placeholder="Questions, use cases or collaboration ideas" data-i18n-placeholder="form.messagePlaceholder" maxlength="500"></textarea>
           </label>
           <input class="honeypot" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <div class="newsletter__submit">
-            <button type="submit" class="btn btn--accent">提交</button>
+            <button type="submit" class="btn btn--accent" data-i18n="form.submit">Submit</button>
             <p class="form-status" id="newsletterStatus" aria-live="polite"></p>
           </div>
         </form>
@@ -261,7 +262,7 @@
     </section>
   </main>
 
-  <!-- ===== 页脚 Footer ===== -->
+  <!-- ===== Footer ===== -->
   <footer class="footer" id="faq">
     <div class="container footer__grid">
       <div class="footer__col footer__brand">
@@ -269,22 +270,22 @@
           <span class="brand-mark" aria-hidden="true"></span>
           <span class="brand-word">Linki</span>
         </span>
-        <p>为赛博生活而生的陪伴宠物。</p>
+        <p data-i18n="footer.tagline">A companion pet made for cyber life.</p>
       </div>
       <div class="footer__col">
-        <h3>产品</h3>
-        <a href="#intro">灵奇</a>
-        <a href="#intro">功能</a>
-        <a href="#specs">规格</a>
+        <h3 data-i18n="footer.productHeading">Product</h3>
+        <a href="#intro" data-i18n="footer.productLinki">Linki</a>
+        <a href="#intro" data-i18n="footer.productFeatures">Features</a>
+        <a href="#specs" data-i18n="footer.productSpecs">Specs</a>
       </div>
       <div class="footer__col">
-        <h3>支持</h3>
-        <a href="#">常见问题</a>
-        <a href="#">配送政策</a>
-        <a href="#">联系我们</a>
+        <h3 data-i18n="footer.supportHeading">Support</h3>
+        <a href="#" data-i18n="footer.supportFaq">FAQ</a>
+        <a href="#" data-i18n="footer.supportShipping">Shipping</a>
+        <a href="#" data-i18n="footer.supportContact">Contact</a>
       </div>
       <div class="footer__col">
-        <h3>关注我们</h3>
+        <h3 data-i18n="footer.followHeading">Follow us</h3>
         <div class="footer__social">
           <a href="#" aria-label="Instagram">IG</a>
           <a href="#" aria-label="TikTok">TT</a>
@@ -298,6 +299,7 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=20260828-fast2"></script>
+  <script src="js/i18n.js?v=20260902-i18n"></script>
+  <script src="js/main.js?v=20260902-i18n"></script>
 </body>
 </html>

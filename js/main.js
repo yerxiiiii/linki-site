@@ -168,10 +168,7 @@
   if (form) {
     const status = document.getElementById('newsletterStatus');
     const submitButton = form.querySelector('button[type="submit"]');
-    const lang = document.documentElement.lang && document.documentElement.lang.toLowerCase().startsWith('en')
-      ? 'en'
-      : 'zh';
-    const messages = {
+    const messagesByLang = {
       zh: {
         missing: '请填写姓名、邮箱和关注方向。',
         invalidEmail: '请填写有效的邮箱地址。',
@@ -184,7 +181,12 @@
         success: 'Received. We will get back to you soon.',
         error: 'Submission failed. Please try again later.',
       },
-    }[lang];
+    };
+    function currentLang() {
+      return document.documentElement.lang && document.documentElement.lang.toLowerCase().startsWith('en')
+        ? 'en'
+        : 'zh';
+    }
 
     function setStatus(message, isError) {
       if (!status) return;
@@ -202,6 +204,8 @@
 
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
+      const lang = currentLang();
+      const messages = messagesByLang[lang];
       const formData = new FormData(form);
       const email = String(formData.get('email') || '').trim();
       const name = String(formData.get('name') || '').trim();
