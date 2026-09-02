@@ -290,7 +290,7 @@ function health(res) {
 }
 
 function isAllowedPublicPath(pathname) {
-  if (pathname === '/' || pathname === '/index.html' || pathname === '/favicon.svg') return true;
+  if (pathname === '/' || pathname === '/index.html' || pathname === '/join.html' || pathname === '/favicon.svg') return true;
   const first = pathname.split('/').filter(Boolean)[0];
   return ['assets', 'css', 'js', 'en'].includes(first);
 }

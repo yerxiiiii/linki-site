@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join Linki - Share Your Feedback</title>
+  <meta name="description" content="Join the Linki community, save your place and tell us which features matter most to you." />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css?v=20260902-i18n" />
+</head>
+<body>
+
+  <!-- ===== Announcement Bar ===== -->
+  <div class="announcement" aria-hidden="true">
+    <div class="announcement__track">
+      <div class="announcement__set">
+        <img src="assets/linki-mark.svg" alt="" />
+        <img src="assets/linki-rabbit-mark.svg" alt="" />
+        <img src="assets/linki-pig-mark.svg" alt="" />
+        <img src="assets/linki-panda-mark.svg" alt="" />
+        <img src="assets/linki-mark.svg" alt="" />
+        <img src="assets/linki-rabbit-mark.svg" alt="" />
+        <img src="assets/linki-pig-mark.svg" alt="" />
+        <img src="assets/linki-panda-mark.svg" alt="" />
+      </div>
+      <div class="announcement__set">
+        <img src="assets/linki-mark.svg" alt="" />
+        <img src="assets/linki-rabbit-mark.svg" alt="" />
+        <img src="assets/linki-pig-mark.svg" alt="" />
+        <img src="assets/linki-panda-mark.svg" alt="" />
+        <img src="assets/linki-mark.svg" alt="" />
+        <img src="assets/linki-rabbit-mark.svg" alt="" />
+        <img src="assets/linki-pig-mark.svg" alt="" />
+        <img src="assets/linki-panda-mark.svg" alt="" />
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Sticky Header ===== -->
+  <header class="header" id="header">
+    <div class="container header__inner">
+      <a href="index.html" class="header__logo" aria-label="Linki">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-word">Linki</span>
+      </a>
+
+      <nav class="nav" id="nav" data-i18n-aria="nav.ariaLabel">
+        <div class="nav__links">
+          <a href="index.html" class="nav__link" data-i18n="nav.home">Home</a>
+          <a href="index.html#intro" class="nav__link" data-i18n="nav.features">Features</a>
+          <a href="index.html#specs" class="nav__link" data-i18n="nav.specs">Specs</a>
+          <a href="join.html" class="nav__link" data-i18n="nav.contact">Contact</a>
+        </div>
+        <div class="nav__extra">
+          <a href="join.html" class="nav__cta btn btn--accent" data-i18n="nav.cta">Join now</a>
+          <button class="lang-toggle" id="langToggle" type="button" data-i18n-aria="lang.toggleAria">切换到中文</button>
+        </div>
+      </nav>
+
+      <div class="header__actions">
+        <button class="hamburger" id="hamburger" data-i18n-aria="nav.menuAria" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===== Join form ===== -->
+    <section class="newsletter" id="newsletter">
+      <div class="container newsletter__inner">
+        <h2 class="reveal" data-i18n="newsletter.title">Join the world of Linki</h2>
+        <p class="reveal" data-i18n="newsletter.desc">Leave your details and we will share product updates, trial access and partnership notes.</p>
+        <form class="newsletter__form reveal" id="newsletterForm" novalidate data-submit-label="Submit" data-loading-label="Submitting…">
+          <label class="form-field">
+            <span data-i18n="form.name">Name</span>
+            <input type="text" name="name" placeholder="Your name" data-i18n-placeholder="form.namePlaceholder" autocomplete="name" required maxlength="50" />
+          </label>
+          <label class="form-field">
+            <span data-i18n="form.email">Email</span>
+            <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+          </label>
+          <label class="form-field">
+            <span data-i18n="form.contact">Contact</span>
+            <input type="text" name="contact" placeholder="Optional phone or messaging ID" data-i18n-placeholder="form.contactPlaceholder" autocomplete="tel" maxlength="80" />
+          </label>
+          <label class="form-field">
+            <span data-i18n="form.intent">Interest</span>
+            <select name="intent" required>
+              <option value="" data-i18n="form.intentSelect">Select one</option>
+              <option value="preorder" data-i18n="form.intentPreorder">Preorder</option>
+              <option value="experience" data-i18n="form.intentExperience">Trial experience</option>
+              <option value="partnership" data-i18n="form.intentPartnership">Channel / partnership</option>
+              <option value="media" data-i18n="form.intentMedia">Media inquiry</option>
+              <option value="other" data-i18n="form.intentOther">Other</option>
+            </select>
+          </label>
+          <fieldset class="form-features form-field--wide">
+            <legend data-i18n="form.featuresLegend">Which Linki features matter most to you?</legend>
+            <p class="form-features__helper" data-i18n="form.featuresHelper">Pick anything you care about—it shapes what we build next.</p>
+            <div class="form-features__grid">
+              <label class="form-features__option">
+                <input type="checkbox" name="selectedFeatures" value="Season-synced screen" />
+                <span data-i18n="form.feature.seasons">Season-synced screen</span>
+              </label>
+              <label class="form-features__option">
+                <input type="checkbox" name="selectedFeatures" value="Camera-free presence sensing" />
+                <span data-i18n="form.feature.presence">Camera-free presence sensing</span>
+              </label>
+              <label class="form-features__option">
+                <input type="checkbox" name="selectedFeatures" value="Responsive touch interaction" />
+                <span data-i18n="form.feature.touch">Responsive touch interaction</span>
+              </label>
+              <label class="form-features__option">
+                <input type="checkbox" name="selectedFeatures" value="Naked-eye 3D display" />
+                <span data-i18n="form.feature.display3d">Naked-eye 3D display</span>
+              </label>
+              <label class="form-features__option">
+                <input type="checkbox" name="selectedFeatures" value="Non-visual environmental sensing" />
+                <span data-i18n="form.feature.envSensing">Non-visual environmental sensing</span>
+              </label>
+              <label class="form-features__option">
+                <input type="checkbox" name="selectedFeatures" value="Magnetic character interface" />
+                <span data-i18n="form.feature.magnetic">Magnetic character interface</span>
+              </label>
+            </div>
+          </fieldset>
+          <label class="form-field form-field--wide">
+            <span data-i18n="form.message">Message</span>
+            <textarea name="message" rows="4" placeholder="Questions, use cases or collaboration ideas" data-i18n-placeholder="form.messagePlaceholder" maxlength="500"></textarea>
+          </label>
+          <input class="honeypot" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <div class="newsletter__submit">
+            <button type="submit" class="btn btn--accent" data-i18n="form.submit">Submit</button>
+            <p class="form-status" id="newsletterStatus" aria-live="polite"></p>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer" id="faq">
+    <div class="container footer__grid">
+      <div class="footer__col footer__brand">
+        <span class="header__logo">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span class="brand-word">Linki</span>
+        </span>
+        <p data-i18n="footer.tagline">A companion pet made for cyber life.</p>
+      </div>
+      <div class="footer__col">
+        <h3 data-i18n="footer.productHeading">Product</h3>
+        <a href="index.html#intro" data-i18n="footer.productLinki">Linki</a>
+        <a href="index.html#intro" data-i18n="footer.productFeatures">Features</a>
+        <a href="index.html#specs" data-i18n="footer.productSpecs">Specs</a>
+      </div>
+      <div class="footer__col">
+        <h3 data-i18n="footer.supportHeading">Support</h3>
+        <a href="#" data-i18n="footer.supportFaq">FAQ</a>
+        <a href="#" data-i18n="footer.supportShipping">Shipping</a>
+        <a href="#" data-i18n="footer.supportContact">Contact</a>
+      </div>
+      <div class="footer__col">
+        <h3 data-i18n="footer.followHeading">Follow us</h3>
+        <div class="footer__social">
+          <a href="#" aria-label="Facebook">
+            <svg viewBox="0 0 256 256" width="18" height="18" fill="currentColor"><path d="M232,128a104.16,104.16,0,0,1-91.55,103.26,4,4,0,0,1-4.45-4V152h24a8,8,0,0,0,8-8.53,8.17,8.17,0,0,0-8.25-7.47H136V112a16,16,0,0,1,16-16h16a8,8,0,0,0,8-8.53A8.17,8.17,0,0,0,167.73,80H152a32,32,0,0,0-32,32v24H96a8,8,0,0,0-8,8.53A8.17,8.17,0,0,0,96.27,152H120v75.28a4,4,0,0,1-4.44,4A104.15,104.15,0,0,1,24.07,124.09c2-54,45.74-97.9,99.78-100A104.12,104.12,0,0,1,232,128Z"/></svg>
+          </a>
+          <a href="#" aria-label="Discord">
+            <svg viewBox="0 0 256 256" width="18" height="18" fill="currentColor"><path d="M247.51,174.39,218,58a16.08,16.08,0,0,0-13-11.88l-36.06-5.92a16.22,16.22,0,0,0-18.26,11.88l-.21.85a4,4,0,0,0,3.27,4.93,155.62,155.62,0,0,1,24.41,5.62,8.2,8.2,0,0,1,5.62,9.7,8,8,0,0,1-10.19,5.64,155.4,155.4,0,0,0-90.8-.1,8.22,8.22,0,0,1-10.28-4.81,8,8,0,0,1,5.08-10.33,156.85,156.85,0,0,1,24.72-5.72,4,4,0,0,0,3.27-4.93l-.21-.85A16.21,16.21,0,0,0,87.08,40.21L51,46.13A16.08,16.08,0,0,0,38,58L8.49,174.39a15.94,15.94,0,0,0,9.06,18.51l67,29.71a16.17,16.17,0,0,0,21.71-9.1l3.49-9.45a4,4,0,0,0-3.27-5.35,158.13,158.13,0,0,1-28.63-6.2,8.2,8.2,0,0,1-5.61-9.67,8,8,0,0,1,10.2-5.66,155.59,155.59,0,0,0,91.12,0,8,8,0,0,1,10.19,5.65,8.19,8.19,0,0,1-5.61,9.68,157.84,157.84,0,0,1-28.62,6.2,4,4,0,0,0-3.27,5.35l3.49,9.45a16.18,16.18,0,0,0,21.71,9.1l67-29.71A15.94,15.94,0,0,0,247.51,174.39ZM92,152a12,12,0,1,1,12-12A12,12,0,0,1,92,152Zm72,0a12,12,0,1,1,12-12A12,12,0,0,1,164,152Z"/></svg>
+          </a>
+          <a href="#" aria-label="Instagram">IG</a>
+          <a href="#" aria-label="TikTok">TT</a>
+          <a href="#" aria-label="X">X</a>
+          <a href="#" aria-label="YouTube">YT</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 Linki. All rights reserved.</span>
+    </div>
+  </footer>
+
+  <script src="js/i18n.js?v=20260902-i18n"></script>
+  <script src="js/main.js?v=20260902-i18n"></script>
+</body>
+</html>

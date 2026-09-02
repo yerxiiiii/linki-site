@@ -53,10 +53,10 @@
           <a href="#" class="nav__link" data-i18n="nav.home">Home</a>
           <a href="#intro" class="nav__link" data-i18n="nav.features">Features</a>
           <a href="#specs" class="nav__link" data-i18n="nav.specs">Specs</a>
-          <a href="#newsletter" class="nav__link" data-i18n="nav.contact">Contact</a>
+          <a href="join.html" class="nav__link" data-i18n="nav.contact">Contact</a>
         </div>
         <div class="nav__extra">
-          <a href="#newsletter" class="nav__cta btn btn--accent" data-i18n="nav.cta">Join now</a>
+          <a href="join.html" class="nav__cta btn btn--accent" data-i18n="nav.cta">Join now</a>
           <button class="lang-toggle" id="langToggle" type="button" data-i18n-aria="lang.toggleAria">切换到中文</button>
         </div>
       </nav>
@@ -229,70 +229,7 @@
       <div class="container newsletter__inner">
         <h2 class="reveal" data-i18n="newsletter.title">Join the world of Linki</h2>
         <p class="reveal" data-i18n="newsletter.desc">Leave your details and we will share product updates, trial access and partnership notes.</p>
-        <form class="newsletter__form reveal" id="newsletterForm" novalidate data-submit-label="Submit" data-loading-label="Submitting…">
-          <label class="form-field">
-            <span data-i18n="form.name">Name</span>
-            <input type="text" name="name" placeholder="Your name" data-i18n-placeholder="form.namePlaceholder" autocomplete="name" required maxlength="50" />
-          </label>
-          <label class="form-field">
-            <span data-i18n="form.email">Email</span>
-            <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
-          </label>
-          <label class="form-field">
-            <span data-i18n="form.contact">Contact</span>
-            <input type="text" name="contact" placeholder="Optional phone or messaging ID" data-i18n-placeholder="form.contactPlaceholder" autocomplete="tel" maxlength="80" />
-          </label>
-          <label class="form-field">
-            <span data-i18n="form.intent">Interest</span>
-            <select name="intent" required>
-              <option value="" data-i18n="form.intentSelect">Select one</option>
-              <option value="preorder" data-i18n="form.intentPreorder">Preorder</option>
-              <option value="experience" data-i18n="form.intentExperience">Trial experience</option>
-              <option value="partnership" data-i18n="form.intentPartnership">Channel / partnership</option>
-              <option value="media" data-i18n="form.intentMedia">Media inquiry</option>
-              <option value="other" data-i18n="form.intentOther">Other</option>
-            </select>
-          </label>
-          <fieldset class="form-features form-field--wide">
-            <legend data-i18n="form.featuresLegend">Which Linki features matter most to you?</legend>
-            <p class="form-features__helper" data-i18n="form.featuresHelper">Pick anything you care about—it shapes what we build next.</p>
-            <div class="form-features__grid">
-              <label class="form-features__option">
-                <input type="checkbox" name="selectedFeatures" value="Season-synced screen" />
-                <span data-i18n="form.feature.seasons">Season-synced screen</span>
-              </label>
-              <label class="form-features__option">
-                <input type="checkbox" name="selectedFeatures" value="Camera-free presence sensing" />
-                <span data-i18n="form.feature.presence">Camera-free presence sensing</span>
-              </label>
-              <label class="form-features__option">
-                <input type="checkbox" name="selectedFeatures" value="Responsive touch interaction" />
-                <span data-i18n="form.feature.touch">Responsive touch interaction</span>
-              </label>
-              <label class="form-features__option">
-                <input type="checkbox" name="selectedFeatures" value="Naked-eye 3D display" />
-                <span data-i18n="form.feature.display3d">Naked-eye 3D display</span>
-              </label>
-              <label class="form-features__option">
-                <input type="checkbox" name="selectedFeatures" value="Non-visual environmental sensing" />
-                <span data-i18n="form.feature.envSensing">Non-visual environmental sensing</span>
-              </label>
-              <label class="form-features__option">
-                <input type="checkbox" name="selectedFeatures" value="Magnetic character interface" />
-                <span data-i18n="form.feature.magnetic">Magnetic character interface</span>
-              </label>
-            </div>
-          </fieldset>
-          <label class="form-field form-field--wide">
-            <span data-i18n="form.message">Message</span>
-            <textarea name="message" rows="4" placeholder="Questions, use cases or collaboration ideas" data-i18n-placeholder="form.messagePlaceholder" maxlength="500"></textarea>
-          </label>
-          <input class="honeypot" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
-          <div class="newsletter__submit">
-            <button type="submit" class="btn btn--accent" data-i18n="form.submit">Submit</button>
-            <p class="form-status" id="newsletterStatus" aria-live="polite"></p>
-          </div>
-        </form>
+        <a href="join.html" class="btn btn--accent reveal" data-i18n="newsletter.cta">Join now</a>
       </div>
     </section>
   </main>

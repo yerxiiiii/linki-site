@@ -107,6 +107,7 @@
       en: 'Leave your details and we will share product updates, trial access and partnership notes.',
       zh: '留下联系方式，我们会把新品进展、试用名额和合作信息同步给你。',
     },
+    'newsletter.cta': { en: 'Join now', zh: '立即加入' },
 
     'form.name': { en: 'Name', zh: '姓名' },
     'form.namePlaceholder': { en: 'Your name', zh: '你的姓名' },
