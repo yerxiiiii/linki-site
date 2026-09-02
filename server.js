@@ -44,8 +44,8 @@ const INTENT_LABEL = {
 };
 
 const insertLeadStmt = db.prepare(`
-  INSERT INTO leads (name, email, contact, intent, message, lang, page_path, ip, user_agent)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  INSERT INTO leads (name, email, contact, intent, selected_features, message, lang, page_path, ip, user_agent)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `);
 const deleteLeadStmt = db.prepare('DELETE FROM leads WHERE id = ?');
 const pingStmt = db.prepare('SELECT 1 AS ok');
@@ -160,6 +160,11 @@ function clean(value, max) {
   return String(value ?? '').trim().slice(0, max);
 }
 
+function cleanList(value, maxItems, itemMax) {
+  const arr = Array.isArray(value) ? value : [];
+  return arr.map((item) => clean(item, itemMax)).filter(Boolean).slice(0, maxItems);
+}
+
 function validateLead(body) {
   if (clean(body.website, 100)) return { bot: true };
 
@@ -167,6 +172,7 @@ function validateLead(body) {
   const email = clean(body.email, 120).toLowerCase();
   const contact = clean(body.contact, 80);
   const intent = clean(body.intent, 40);
+  const selectedFeatures = cleanList(body.selectedFeatures, 12, 60).join(', ');
   const message = clean(body.message, 500);
   const lang = clean(body.lang, 8) === 'en' ? 'en' : 'zh';
   const pagePath = clean(body.pagePath, 160);
@@ -175,7 +181,7 @@ function validateLead(body) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: '邮箱格式不正确' };
   if (!INTENTS.includes(intent)) return { error: '请选择有效的关注方向' };
 
-  return { value: { name, email, contact, intent, message, lang, pagePath } };
+  return { value: { name, email, contact, intent, selectedFeatures, message, lang, pagePath } };
 }
 
 function rowToLead(row) {
@@ -186,6 +192,7 @@ function rowToLead(row) {
     contact: row.contact,
     intent: row.intent,
     intentLabel: INTENT_LABEL[row.intent] || row.intent,
+    selectedFeatures: row.selected_features,
     message: row.message,
     lang: row.lang,
     pagePath: row.page_path,
@@ -198,7 +205,7 @@ function queryLeads({ page = 1, size = 20, all = false } = {}) {
     return {
       items: db
         .prepare(
-          'SELECT id, name, email, contact, intent, message, lang, page_path, created_at FROM leads ORDER BY id DESC',
+          'SELECT id, name, email, contact, intent, selected_features, message, lang, page_path, created_at FROM leads ORDER BY id DESC',
         )
         .all()
         .map(rowToLead),
@@ -210,7 +217,7 @@ function queryLeads({ page = 1, size = 20, all = false } = {}) {
   const total = db.prepare('SELECT COUNT(*) AS n FROM leads').get().n;
   const items = db
     .prepare(
-      'SELECT id, name, email, contact, intent, message, lang, page_path, created_at FROM leads ORDER BY id DESC LIMIT ? OFFSET ?',
+      'SELECT id, name, email, contact, intent, selected_features, message, lang, page_path, created_at FROM leads ORDER BY id DESC LIMIT ? OFFSET ?',
     )
     .all(safeSize, (safePage - 1) * safeSize)
     .map(rowToLead);
@@ -248,7 +255,7 @@ function csvCell(value) {
 }
 
 function leadsCsv(rows) {
-  const headers = ['ID', '姓名', '邮箱', '联系方式', '关注方向', '留言', '语言', '来源页', '提交时间'];
+  const headers = ['ID', '姓名', '邮箱', '联系方式', '关注方向', '关注亮点', '留言', '语言', '来源页', '提交时间'];
   const lines = [
     headers,
     ...rows.map((lead) => [
@@ -257,6 +264,7 @@ function leadsCsv(rows) {
       lead.email,
       lead.contact,
       lead.intentLabel,
+      lead.selectedFeatures,
       lead.message,
       lead.lang,
       lead.pagePath,
@@ -348,6 +356,7 @@ async function handlePublic(req, res) {
         value.email,
         value.contact,
         value.intent,
+        value.selectedFeatures,
         value.message,
         value.lang,
         value.pagePath,

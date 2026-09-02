@@ -14,7 +14,7 @@
       hamburger.setAttribute('aria-expanded', String(open));
     });
     // 点击导航链接后收起
-    nav.querySelectorAll('.nav__link').forEach(function (link) {
+    nav.querySelectorAll('.nav__link, .nav__cta').forEach(function (link) {
       link.addEventListener('click', function () {
         nav.classList.remove('is-open');
         hamburger.classList.remove('is-active');
@@ -210,6 +210,7 @@
       const email = String(formData.get('email') || '').trim();
       const name = String(formData.get('name') || '').trim();
       const intent = String(formData.get('intent') || '').trim();
+      const selectedFeatures = formData.getAll('selectedFeatures').map(String);
 
       setStatus('', false);
 
@@ -228,6 +229,7 @@
         email,
         contact: String(formData.get('contact') || '').trim(),
         intent,
+        selectedFeatures,
         message: String(formData.get('message') || '').trim(),
         website: String(formData.get('website') || '').trim(),
         lang,

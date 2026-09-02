@@ -15,6 +15,7 @@
     'nav.contact': { en: 'Contact', zh: '联系我们' },
     'lang.toggleAria': { en: 'Switch to Chinese', zh: 'Switch to English' },
     'lang.toggleLabel': { en: '中文', zh: 'EN' },
+    'nav.cta': { en: 'Join now', zh: '立即加入' },
 
     'hero.eyebrow': { en: 'A little life on your desk', zh: '桌面上的一只小生命' },
     'hero.title': {
@@ -119,6 +120,17 @@
     'form.intentPartnership': { en: 'Channel / partnership', zh: '渠道 / 商务合作' },
     'form.intentMedia': { en: 'Media inquiry', zh: '媒体咨询' },
     'form.intentOther': { en: 'Other', zh: '其他' },
+    'form.featuresLegend': { en: 'Which Linki features matter most to you?', zh: '灵奇的哪些亮点最吸引你？' },
+    'form.featuresHelper': {
+      en: 'Pick anything you care about—it shapes what we build next.',
+      zh: '选择你在意的方向，这会影响我们接下来的打磨重点。',
+    },
+    'form.feature.seasons': { en: 'Season-synced screen', zh: '四季同步屏幕' },
+    'form.feature.presence': { en: 'Camera-free presence sensing', zh: '无摄像头存在感知' },
+    'form.feature.touch': { en: 'Responsive touch interaction', zh: '触摸即时反馈' },
+    'form.feature.display3d': { en: 'Naked-eye 3D display', zh: '裸眼 3D 立体显示' },
+    'form.feature.envSensing': { en: 'Non-visual environmental sensing', zh: '非视觉环境感知' },
+    'form.feature.magnetic': { en: 'Magnetic character interface', zh: '磁吸角色接口' },
     'form.message': { en: 'Message', zh: '留言' },
     'form.messagePlaceholder': { en: 'Questions, use cases or collaboration ideas', zh: '想了解的问题、使用场景或合作想法' },
     'form.submit': { en: 'Submit', zh: '提交' },

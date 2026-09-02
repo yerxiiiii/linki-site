@@ -368,6 +368,7 @@
               <td class="col-email clip" title="${esc(item.email)}">${esc(item.email)}</td>
               <td class="col-contact clip" title="${esc(item.contact)}">${item.contact ? esc(item.contact) : '<span class="muted">-</span>'}</td>
               <td class="col-intent"><span class="tag">${esc(item.intentLabel)}</span></td>
+              <td class="clip" title="${esc(item.selectedFeatures || '')}">${item.selectedFeatures ? esc(item.selectedFeatures) : '<span class="muted">-</span>'}</td>
               <td>${messageHtml}</td>
               <td class="col-lang">${esc(item.lang || "-")}</td>
             </tr>`;
@@ -383,6 +384,7 @@
                 <th class="col-email">邮箱</th>
                 <th class="col-contact">联系方式</th>
                 <th class="col-intent">关注方向</th>
+                <th>关注亮点</th>
                 <th>留言</th>
                 <th class="col-lang">语言</th>
               </tr>
