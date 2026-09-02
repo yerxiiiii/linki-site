@@ -102,6 +102,19 @@
       zh: '顶部磁吸模块连接实体造型与数字角色，可持续扩展。',
     },
 
+    'modules.title': { en: 'Five expressions, one magnetic snap', zh: '五种表情，磁吸即换' },
+    'modules.copy': {
+      en: "Swap the ear module and the on-screen character changes with it. Tap a card to draw it to the front.",
+      zh: '换上不同的耳朵模块，屏幕里的角色也跟着变身。点一张卡牌，把它抽到最前面。',
+    },
+    'modules.hint': { en: 'Tap a card to draw it to the front', zh: '点击卡牌，把它抽到最前面' },
+    'modules.fanAria': { en: 'Ear module cards, tap to draw', zh: '耳朵模块卡片，点击抽取' },
+    'modules.panda': { en: 'Panda', zh: '熊猫' },
+    'modules.pig': { en: 'Piglet', zh: '小猪' },
+    'modules.shiba': { en: 'Shiba Inu', zh: '柴犬' },
+    'modules.fox': { en: 'Fox', zh: '狐狸' },
+    'modules.rabbit': { en: 'Rabbit', zh: '兔子' },
+
     'newsletter.title': { en: 'Join the world of Linki', zh: '加入灵奇的世界' },
     'newsletter.desc': {
       en: 'Leave your details and we will share product updates, trial access and partnership notes.',

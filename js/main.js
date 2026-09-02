@@ -61,6 +61,43 @@
     });
   }
 
+  /* ---------- 磁吸模块抽卡卡牌轮盘 ---------- */
+  const earFanStage = document.getElementById('earFanStage');
+  if (earFanStage) {
+    const earCards = Array.from(earFanStage.querySelectorAll('.ear-fan__card'));
+    let earActive = earCards.findIndex(function (card) {
+      return card.getAttribute('aria-selected') === 'true';
+    });
+    if (earActive < 0) earActive = Math.floor(earCards.length / 2);
+
+    function layoutEarFan() {
+      const total = earCards.length;
+      const half = Math.floor(total / 2);
+      earCards.forEach(function (card, i) {
+        let offset = i - earActive;
+        if (offset > half) offset -= total;
+        if (offset < -half) offset += total;
+        const angle = offset * 13;
+        const y = Math.abs(offset) * 22;
+        const scale = offset === 0 ? 1 : Math.max(0.78, 1 - Math.abs(offset) * 0.1);
+        card.style.transform = 'translate(-50%, -50%) rotate(' + angle + 'deg) translateY(' + y + 'px) scale(' + scale + ')';
+        card.style.zIndex = String(10 - Math.abs(offset));
+        card.style.opacity = String(Math.max(0.45, 1 - Math.abs(offset) * 0.18));
+        card.classList.toggle('is-active', offset === 0);
+        card.setAttribute('aria-selected', offset === 0 ? 'true' : 'false');
+      });
+    }
+
+    earCards.forEach(function (card, i) {
+      card.addEventListener('click', function () {
+        earActive = i;
+        layoutEarFan();
+      });
+    });
+
+    layoutEarFan();
+  }
+
   /* ---------- 公告条角色灯带：按视口宽度补齐，保证固定间距下无空白 ---------- */
   const announcementTrack = document.querySelector('.announcement__track');
   const announcementSets = document.querySelectorAll('.announcement__set');
