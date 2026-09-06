@@ -210,13 +210,11 @@
       zh: {
         missing: '请填写姓名、邮箱和关注方向。',
         invalidEmail: '请填写有效的邮箱地址。',
-        success: '已收到，我们会尽快联系你。',
         error: '提交失败，请稍后再试。',
       },
       en: {
         missing: 'Please complete your name, email and interest.',
         invalidEmail: 'Please enter a valid email address.',
-        success: 'Received. We will get back to you soon.',
         error: 'Submission failed. Please try again later.',
       },
     };
@@ -285,7 +283,7 @@
         if (!response.ok) throw new Error(data.error || messages.error);
 
         form.reset();
-        setStatus(messages.success, false);
+        window.location.href = 'success.html';
       } catch (error) {
         setStatus(error.message || messages.error, true);
       } finally {

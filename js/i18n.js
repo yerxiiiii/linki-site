@@ -116,6 +116,7 @@
     'modules.shiba': { en: 'Shiba Inu', zh: '柴犬' },
     'modules.fox': { en: 'Fox', zh: '狐狸' },
     'modules.rabbit': { en: 'Rabbit', zh: '兔子' },
+    'modules.hamster': { en: 'Cangcang', zh: '仓仓' },
 
     'newsletter.title': { en: 'Join the world of Linki', zh: '加入灵奇的世界' },
     'newsletter.desc': {
@@ -151,6 +152,39 @@
     'form.messagePlaceholder': { en: 'Questions, use cases or collaboration ideas', zh: '想了解的问题、使用场景或合作想法' },
     'form.submit': { en: 'Submit', zh: '提交' },
     'form.loading': { en: 'Submitting…', zh: '提交中…' },
+
+    'success.eyebrow': { en: 'Your place is saved', zh: '你的席位已保留' },
+    'success.title': {
+      en: 'You are in.<br />Come shape what Linki becomes.',
+      zh: '已收到。<br />一起塑造灵奇接下来的样子。',
+    },
+    'success.desc': {
+      en: 'The waitlist keeps you updated. The community brings you closer to the people, ideas and decisions shaping Linki before launch.',
+      zh: '候补名单会同步新品进展。社群会让你更近距离参与灵奇上线前的想法、反馈和产品决策。',
+    },
+    'success.fbLabel': { en: 'For everyday stories', zh: '适合分享日常故事' },
+    'success.fbTitle': { en: 'Facebook Group', zh: 'Facebook 社群' },
+    'success.fbDesc': {
+      en: 'Meet future Linki owners and share the quiet moments you want this little desktop life to be part of.',
+      zh: '认识未来的灵奇用户，分享你希望这只桌面小生命参与的真实日常。',
+    },
+    'success.fbPerk1': { en: 'Meet future Linki families', zh: '认识未来的灵奇用户' },
+    'success.fbPerk2': { en: 'Share desk setups and daily routines', zh: '分享桌面布置与日常使用场景' },
+    'success.fbPerk3': { en: 'Get first notice of community events', zh: '优先收到社群活动通知' },
+    'success.fbPerk4': { en: 'Vote on character stories and scenes', zh: '参与角色故事和场景投票' },
+    'success.fbCta': { en: 'Join Facebook Group', zh: '加入 Facebook 社群' },
+    'success.discordLabel': { en: 'For build-in-public updates', zh: '适合参与产品共创' },
+    'success.discordTitle': { en: 'Discord Community', zh: 'Discord 社群' },
+    'success.discordDesc': {
+      en: 'Follow product progress up close, talk with the team and help decide what gets refined before launch.',
+      zh: '近距离了解产品进展，和团队及早期支持者交流，一起决定上线前要打磨什么。',
+    },
+    'success.discordPerk1': { en: 'Follow product development up close', zh: '近距离跟进产品开发进度' },
+    'success.discordPerk2': { en: 'Talk with the team and early supporters', zh: '和团队及早期支持者直接交流' },
+    'success.discordPerk3': { en: 'Join feedback sessions and live AMAs', zh: '参与反馈会和线上问答' },
+    'success.discordPerk4': { en: 'Influence features before launch', zh: '影响上线前的功能优先级' },
+    'success.discordCta': { en: 'Join Discord', zh: '加入 Discord' },
+    'success.back': { en: 'Back to home', zh: '返回首页' },
 
     'footer.tagline': { en: 'A companion pet made for cyber life.', zh: '为赛博生活而生的陪伴宠物。' },
     'footer.productHeading': { en: 'Product', zh: '产品' },
