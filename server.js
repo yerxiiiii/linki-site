@@ -1,6 +1,7 @@
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import { dirname, extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
 import http from 'node:http';
 import db from './db.js';
 
@@ -19,6 +20,13 @@ const startedAt = Date.now();
 
 const TRUST_PROXY = parseTrustProxy(process.env.TRUST_PROXY);
 const ALLOWED_IPS = new Set(['127.0.0.1', '::1', ...parseList(process.env.ADMIN_ALLOWED_IPS)]);
+
+// ---- Meta Conversions API（服务端 Lead）----
+// 不配 META_CAPI_TOKEN 时整体不发送，行为与之前一致
+const META_PIXEL_ID = process.env.META_PIXEL_ID || '28499637663005947';
+const META_CAPI_TOKEN = process.env.META_CAPI_TOKEN || '';
+const META_TEST_EVENT_CODE = process.env.META_TEST_EVENT_CODE || '';
+const META_API_VERSION = process.env.META_API_VERSION || 'v21.0';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -182,6 +190,55 @@ function validateLead(body) {
   if (!INTENTS.includes(intent)) return { error: '请选择有效的关注方向' };
 
   return { value: { name, email, contact, intent, selectedFeatures, message, lang, pagePath } };
+}
+
+// 把邮箱规范化后做 SHA-256（CAPI 要求 PII 哈希后传）
+function sha256(value) {
+  return createHash('sha256').update(String(value).trim().toLowerCase()).digest('hex');
+}
+
+// 服务端发送 Lead 到 Meta Conversions API（与前端 Pixel 用同一 eventId 去重）
+// 未配置 token → 直接跳过；任何异常只记日志，绝不影响用户提交
+async function sendCapiLead({ value, ip, userAgent, sourceUrl, body }) {
+  if (!META_CAPI_TOKEN) return;
+  try {
+    const userData = {
+      em: [sha256(value.email)],
+      client_ip_address: ip || undefined,
+      client_user_agent: userAgent || undefined,
+    };
+    if (body?.fbp) userData.fbp = String(body.fbp);
+    if (body?.fbc) userData.fbc = String(body.fbc);
+
+    const selectedFeatures = Array.isArray(body?.selectedFeatures) ? body.selectedFeatures : [];
+    const payload = {
+      data: [{
+        event_name: 'Lead',
+        event_time: Math.floor(Date.now() / 1000),
+        action_source: 'website',
+        event_id: body?.eventId ? String(body.eventId) : undefined,
+        event_source_url: sourceUrl || undefined,
+        user_data: userData,
+        custom_data: {
+          content_category: selectedFeatures.join(','),
+          num_items: selectedFeatures.length,
+        },
+      }],
+    };
+    if (META_TEST_EVENT_CODE) payload.test_event_code = META_TEST_EVENT_CODE;
+
+    const url = `https://graph.facebook.com/${META_API_VERSION}/${META_PIXEL_ID}/events?access_token=${encodeURIComponent(META_CAPI_TOKEN)}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      console.error('[capi] Lead 发送失败:', res.status, (await res.text()).slice(0, 300));
+    }
+  } catch (e) {
+    console.error('[capi] Lead 异常:', e.message);
+  }
 }
 
 function rowToLead(row) {
@@ -363,6 +420,15 @@ async function handlePublic(req, res) {
         clientIp(req),
         clean(req.headers['user-agent'], 400),
       );
+
+      // 服务端 Lead 事件（Meta CAPI）——非阻塞、不影响给用户的响应
+      sendCapiLead({
+        value,
+        ip: clientIp(req),
+        userAgent: clean(req.headers['user-agent'], 400),
+        sourceUrl: req.headers.referer,
+        body,
+      });
 
       return sendJson(res, 201, { id: info.lastInsertRowid });
     }

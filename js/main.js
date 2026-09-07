@@ -77,10 +77,10 @@
         let offset = i - earActive;
         if (offset > half) offset -= total;
         if (offset < -half) offset += total;
-        const angle = offset * 15;
-        const x = offset * 78;
-        const y = Math.abs(offset) * 18;
-        const scale = offset === 0 ? 1 : Math.max(0.78, 1 - Math.abs(offset) * 0.1);
+        const angle = offset * 14;
+        const x = offset * 70;
+        const y = Math.abs(offset) * 15;
+        const scale = offset === 0 ? 0.96 : Math.max(0.78, 1 - Math.abs(offset) * 0.1);
         card.style.transform = 'translate(-50%, -50%) translateX(' + x + 'px) rotate(' + angle + 'deg) translateY(' + y + 'px) scale(' + scale + ')';
         card.style.zIndex = String(10 - Math.abs(offset));
         card.style.opacity = String(Math.max(0.45, 1 - Math.abs(offset) * 0.18));
@@ -238,8 +238,18 @@
         : form.dataset.submitLabel || submitButton.textContent;
     }
 
-    function goSuccess(payload) {
-      localStorage.setItem('linki-last-lead', JSON.stringify({ ...payload, submittedAt: new Date().toISOString() }));
+    function genEventId() {
+      if (window.crypto && typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+      return 'evt-' + Date.now() + '-' + Math.random().toString(16).slice(2);
+    }
+
+    function getCookie(name) {
+      const m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+      return m ? decodeURIComponent(m[1]) : '';
+    }
+
+    function goSuccess(payload, leadParams) {
+      localStorage.setItem('linki-last-lead', JSON.stringify({ ...payload, leadParams, submittedAt: new Date().toISOString() }));
       window.location.href = 'success.html';
     }
 
@@ -275,12 +285,19 @@
         website: String(formData.get('website') || '').trim(),
         lang,
         pagePath: window.location.pathname,
+        eventId: genEventId(),
+        fbp: getCookie('_fbp'),
+        fbc: getCookie('_fbc'),
+      };
+      const leadParams = {
+        content_category: selectedFeatures.join(','),
+        num_items: selectedFeatures.length,
       };
 
       setLoading(true);
       try {
         if (window.location.hostname.endsWith('github.io')) {
-          goSuccess(payload);
+          goSuccess(payload, leadParams);
           return;
         }
 
@@ -293,9 +310,9 @@
         if (!response.ok) throw new Error(data.error || messages.error);
 
         form.reset();
-        goSuccess(payload);
+        goSuccess(payload, leadParams);
       } catch (error) {
-        goSuccess(payload);
+        setStatus(messages.error, true);
       } finally {
         setLoading(false);
       }
