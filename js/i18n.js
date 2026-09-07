@@ -120,8 +120,8 @@
 
     'newsletter.title': { en: 'Join the world of Linki', zh: '加入灵奇的世界' },
     'newsletter.desc': {
-      en: 'Leave your details and we will share product updates, trial access and partnership notes.',
-      zh: '留下联系方式，我们会把新品进展、试用名额和合作信息同步给你。',
+      en: 'Leave your email and we will share product updates, trial access and community notes.',
+      zh: '留下邮箱，我们会把新品进展、试用名额和社群动态同步给你。',
     },
     'newsletter.cta': { en: 'Join now', zh: '立即加入' },
 

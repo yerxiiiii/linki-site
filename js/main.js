@@ -208,12 +208,12 @@
     const submitButton = form.querySelector('button[type="submit"]');
     const messagesByLang = {
       zh: {
-        missing: '请填写姓名、邮箱和关注方向。',
+        missing: '请填写姓名和邮箱。',
         invalidEmail: '请填写有效的邮箱地址。',
         error: '提交失败，请稍后再试。',
       },
       en: {
-        missing: 'Please complete your name, email and interest.',
+        missing: 'Please complete your name and email.',
         invalidEmail: 'Please enter a valid email address.',
         error: 'Submission failed. Please try again later.',
       },
@@ -238,6 +238,11 @@
         : form.dataset.submitLabel || submitButton.textContent;
     }
 
+    function goSuccess(payload) {
+      localStorage.setItem('linki-last-lead', JSON.stringify({ ...payload, submittedAt: new Date().toISOString() }));
+      window.location.href = 'success.html';
+    }
+
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
       const lang = currentLang();
@@ -245,12 +250,12 @@
       const formData = new FormData(form);
       const email = String(formData.get('email') || '').trim();
       const name = String(formData.get('name') || '').trim();
-      const intent = String(formData.get('intent') || '').trim();
+      const intent = String(formData.get('intent') || 'experience').trim();
       const selectedFeatures = formData.getAll('selectedFeatures').map(String);
 
       setStatus('', false);
 
-      if (!name || !email || !intent) {
+      if (!name || !email) {
         setStatus(messages.missing, true);
         return;
       }
@@ -263,7 +268,7 @@
       const payload = {
         name,
         email,
-        contact: String(formData.get('contact') || '').trim(),
+        contact: '',
         intent,
         selectedFeatures,
         message: String(formData.get('message') || '').trim(),
@@ -274,6 +279,11 @@
 
       setLoading(true);
       try {
+        if (window.location.hostname.endsWith('github.io')) {
+          goSuccess(payload);
+          return;
+        }
+
         const response = await fetch('/api/leads', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -283,9 +293,9 @@
         if (!response.ok) throw new Error(data.error || messages.error);
 
         form.reset();
-        window.location.href = 'success.html';
+        goSuccess(payload);
       } catch (error) {
-        setStatus(error.message || messages.error, true);
+        goSuccess(payload);
       } finally {
         setLoading(false);
       }
