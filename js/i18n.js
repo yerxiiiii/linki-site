@@ -26,6 +26,7 @@
       en: 'No camera, more peace of mind. It shares the same seasons with you, keeping you company in the most natural way, every single day.',
       zh: '没有摄像头，更安心。和你共享同一片四季，用最自然的方式，陪你度过每一天。',
     },
+    'hero.waitlist': { en: 'Join the Waitlist', zh: '加入候补名单' },
     'hero.cta': { en: 'Learn more', zh: '立即了解' },
 
     'intro.eyebrow': { en: 'System capabilities', zh: '系统能力' },

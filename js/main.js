@@ -201,6 +201,18 @@
     }
   }, { passive: true });
 
+  /* ---------- Meta Pixel 自定义事件（被拦截器屏蔽时静默跳过，不报错） ---------- */
+  function pixelCustom(name, params) {
+    if (typeof window.fbq === 'function') window.fbq('trackCustom', name, params || {});
+  }
+
+  // ClickJoinWaitlist：点任意「加入候补 / Join now」入口（对齐 Mimmu 漏斗）
+  document.querySelectorAll('[data-pixel-event="ClickJoinWaitlist"]').forEach(function (link) {
+    link.addEventListener('click', function () {
+      pixelCustom('ClickJoinWaitlist', { method: 'click' });
+    });
+  });
+
   /* ---------- 线索收集表单 ---------- */
   const form = document.getElementById('newsletterForm');
   if (form) {
@@ -253,8 +265,36 @@
       window.location.href = 'success.html';
     }
 
+    // InitiateLead：用户首次与表单任意字段交互时触发一次
+    let initiateLeadFired = false;
+    function fireInitiateLead() {
+      if (initiateLeadFired) return;
+      initiateLeadFired = true;
+      pixelCustom('InitiateLead');
+    }
+    form.addEventListener('input', fireInitiateLead);
+    form.addEventListener('change', fireInitiateLead);
+
+    // ScrollDepth：用户滚动到关注功能区块时触发一次
+    const featuresField = form.querySelector('.form-features');
+    if (featuresField && 'IntersectionObserver' in window) {
+      const featuresObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            pixelCustom('ScrollDepth', { section: 'desired-features' });
+            featuresObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.4 });
+      featuresObserver.observe(featuresField);
+    }
+
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
+
+      // ClickSubmitButton：点击提交即触发（不论校验/成功与否）
+      pixelCustom('ClickSubmitButton');
+
       const lang = currentLang();
       const messages = messagesByLang[lang];
       const formData = new FormData(form);

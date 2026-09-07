@@ -1,7 +1,7 @@
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import { dirname, extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createHash } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 import http from 'node:http';
 import db from './db.js';
 
@@ -20,6 +20,16 @@ const startedAt = Date.now();
 
 const TRUST_PROXY = parseTrustProxy(process.env.TRUST_PROXY);
 const ALLOWED_IPS = new Set(['127.0.0.1', '::1', ...parseList(process.env.ADMIN_ALLOWED_IPS)]);
+
+// ---- 后台账号登录（IP 白名单之外的补充访问方式）----
+const ADMIN_USER = process.env.ADMIN_USER || 'admin';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '123456';
+const SESSION_COOKIE = 'linki_admin_session';
+const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+const LOGIN_MAX_ATTEMPTS = 5;
+const sessions = new Map();
+const loginAttempts = new Map();
 
 // ---- Meta Conversions API（服务端 Lead）----
 // 不配 META_CAPI_TOKEN 时整体不发送，行为与之前一致
@@ -67,6 +77,17 @@ const rateSweep = setInterval(() => {
 }, RATE_WINDOW_MS);
 rateSweep.unref();
 
+const sessionSweep = setInterval(() => {
+  const now = Date.now();
+  for (const [token, expiresAt] of sessions) {
+    if (now >= expiresAt) sessions.delete(token);
+  }
+  for (const [ip, rec] of loginAttempts) {
+    if (now >= rec.resetAt) loginAttempts.delete(ip);
+  }
+}, LOGIN_WINDOW_MS);
+sessionSweep.unref();
+
 function parseTrustProxy(value) {
   if (!value || value === 'false') return false;
   if (value === 'true') return true;
@@ -97,6 +118,44 @@ function clientIp(req) {
   if (TRUST_PROXY === true) return forwarded[0];
   const index = Math.max(0, forwarded.length - TRUST_PROXY);
   return forwarded[index] || remote;
+}
+
+function getCookieValue(req, name) {
+  const raw = req.headers.cookie || '';
+  for (const part of raw.split(';')) {
+    const index = part.indexOf('=');
+    if (index === -1) continue;
+    if (part.slice(0, index).trim() === name) return decodeURIComponent(part.slice(index + 1).trim());
+  }
+  return '';
+}
+
+function createSession() {
+  const token = randomBytes(24).toString('hex');
+  sessions.set(token, Date.now() + SESSION_TTL_MS);
+  return token;
+}
+
+function hasValidSession(req) {
+  const token = getCookieValue(req, SESSION_COOKIE);
+  if (!token) return false;
+  const expiresAt = sessions.get(token);
+  if (!expiresAt) return false;
+  if (Date.now() > expiresAt) {
+    sessions.delete(token);
+    return false;
+  }
+  return true;
+}
+
+function checkLoginRate(ip) {
+  const now = Date.now();
+  let rec = loginAttempts.get(ip);
+  if (!rec || now >= rec.resetAt) {
+    rec = { count: 0, resetAt: now + LOGIN_WINDOW_MS };
+    loginAttempts.set(ip, rec);
+  }
+  return rec;
 }
 
 function sendJson(res, status, payload) {
@@ -391,8 +450,38 @@ function serveStatic(res, baseDir, pathname) {
 function assertAdminAllowed(req, res) {
   if (ADMIN_PUBLIC) return true;
   if (ALLOWED_IPS.has(clientIp(req))) return true;
-  sendText(res, 403, '403 Forbidden');
+  if (hasValidSession(req)) return true;
+  sendError(res, 401, '未登录');
   return false;
+}
+
+async function handleLogin(req, res) {
+  const ip = clientIp(req) || 'unknown';
+  const rec = checkLoginRate(ip);
+  if (rec.count >= LOGIN_MAX_ATTEMPTS) {
+    return sendError(res, 429, '登录尝试过多，请稍后再试');
+  }
+
+  const body = await readJson(req);
+  const username = clean(body.username, 50);
+  const password = String(body.password ?? '');
+
+  if (username === ADMIN_USER && password === ADMIN_PASSWORD) {
+    rec.count = 0;
+    const token = createSession();
+    res.setHeader('Set-Cookie', `${SESSION_COOKIE}=${token}; HttpOnly; Path=/; Max-Age=${Math.floor(SESSION_TTL_MS / 1000)}; SameSite=Lax`);
+    return sendJson(res, 200, { ok: true });
+  }
+
+  rec.count += 1;
+  return sendError(res, 401, '用户名或密码错误');
+}
+
+function handleLogout(req, res) {
+  const token = getCookieValue(req, SESSION_COOKIE);
+  if (token) sessions.delete(token);
+  res.setHeader('Set-Cookie', `${SESSION_COOKIE}=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax`);
+  return sendJson(res, 200, { ok: true });
 }
 
 async function handlePublic(req, res) {
@@ -448,6 +537,17 @@ async function handleAdmin(req, res) {
 
   try {
     if (req.method === 'GET' && url.pathname === '/healthz') return health(res);
+    if (req.method === 'POST' && url.pathname === '/api/login') return handleLogin(req, res);
+    if (req.method === 'POST' && url.pathname === '/api/logout') return handleLogout(req, res);
+
+    // 页面外壳本身不含数据，无需登录即可加载；数据类接口仍受下方的登录/白名单校验保护
+    if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {
+      return serveStatic(res, adminDir, '/index.html');
+    }
+    if (req.method === 'GET' && url.pathname === '/assets/favicon.svg') {
+      return serveStatic(res, rootDir, '/assets/favicon.svg');
+    }
+
     if (!assertAdminAllowed(req, res)) return;
 
     if (req.method === 'GET' && url.pathname === '/api/stats') return sendJson(res, 200, getStats());
@@ -483,8 +583,6 @@ async function handleAdmin(req, res) {
 
     if (url.pathname.startsWith('/api/')) return sendError(res, 404, '接口不存在');
     if (req.method !== 'GET' && req.method !== 'HEAD') return sendText(res, 405, 'Method not allowed');
-    if (url.pathname === '/' || url.pathname === '/index.html') return serveStatic(res, adminDir, '/index.html');
-    if (url.pathname === '/assets/favicon.svg') return serveStatic(res, rootDir, '/assets/favicon.svg');
 
     return sendText(res, 404, 'Not found');
   } catch (error) {
@@ -507,6 +605,7 @@ adminServer.listen(ADMIN_PORT, HOST, () => {
 function shutdown(signal) {
   console.log(`\n收到 ${signal}，正在关闭服务...`);
   clearInterval(rateSweep);
+  clearInterval(sessionSweep);
   const closeServer = (server) => new Promise((resolveClose) => server.close(resolveClose));
   Promise.all([closeServer(publicServer), closeServer(adminServer)]).finally(() => {
     db.close();

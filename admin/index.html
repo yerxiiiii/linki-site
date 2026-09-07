@@ -48,15 +48,38 @@
         background: url("/assets/linki-mark.svg") center / contain no-repeat;
         flex: 0 0 auto;
       }
-      .nav { display: grid; gap: 8px; }
+      .nav { display: grid; gap: 4px; }
       .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
         border-radius: 8px;
         padding: 10px 12px;
-        color: #fff;
-        background: rgba(255, 255, 255, 0.1);
+        color: var(--sidebar-muted);
         font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        border: 0;
+        background: none;
+        width: 100%;
+        text-align: left;
       }
-      .nav-note { color: var(--sidebar-muted); font-size: 13px; padding: 10px 12px; }
+      .nav-item .ico { width: 18px; text-align: center; flex: 0 0 auto; }
+      .nav-item:hover:not(.is-disabled) { background: rgba(255, 255, 255, 0.08); color: #fff; }
+      .nav-item.active { background: rgba(127, 182, 154, 0.28); color: #fff; }
+      .nav-item.is-disabled { opacity: 0.5; cursor: default; }
+      .nav-item.is-disabled:hover { background: none; color: var(--sidebar-muted); }
+      .placeholder-view {
+        display: none;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 48px 28px;
+        text-align: center;
+        color: var(--muted);
+      }
+      .placeholder-view.is-visible { display: block; }
+      #view-feedback[hidden], .placeholder-view[hidden] { display: none !important; }
 
       .main { min-width: 0; }
       .topbar {
@@ -234,6 +257,36 @@
         .stats { grid-template-columns: 1fr; }
         .page-head { display: block; }
       }
+
+      .login-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(45, 35, 28, 0.55);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+      }
+      .login-overlay[hidden] { display: none; }
+      .login-card {
+        background: var(--panel);
+        border-radius: 8px;
+        padding: 28px;
+        width: min(92vw, 360px);
+        display: grid;
+        gap: 14px;
+        box-shadow: 0 24px 64px rgba(45, 35, 28, 0.28);
+      }
+      .login-card h2 { margin: 0; font-size: 20px; }
+      .login-card label { display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
+      .login-card input {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px 12px;
+        color: var(--ink);
+      }
+      .login-error { color: var(--danger); font-size: 13px; min-height: 18px; margin: 0; }
+      .topbar-right { display: flex; align-items: center; gap: 14px; }
     </style>
   </head>
   <body>
@@ -244,44 +297,79 @@
           <span>Linki 后台</span>
         </div>
         <nav class="nav" aria-label="后台导航">
-          <div class="nav-item">线索数据</div>
-          <div class="nav-note">用于查看官网表单收集到的真实提交。</div>
+          <button class="nav-item active" type="button" data-view="feedback" title="反馈">
+            <span class="ico">📋</span><span class="lbl">反馈</span>
+          </button>
+          <button class="nav-item" type="button" data-view="users" title="用户分析">
+            <span class="ico">👥</span><span class="lbl">用户分析</span>
+          </button>
+          <button class="nav-item" type="button" data-view="mail" title="邮件">
+            <span class="ico">✉️</span><span class="lbl">邮件</span>
+          </button>
+          <button class="nav-item" type="button" data-view="ads" title="广告归因">
+            <span class="ico">📈</span><span class="lbl">广告归因</span>
+          </button>
+          <button class="nav-item" type="button" data-view="settings" title="设置">
+            <span class="ico">⚙️</span><span class="lbl">设置</span>
+          </button>
         </nav>
       </aside>
 
       <main class="main">
         <header class="topbar">
-          <span class="crumb">内部看板 / 线索数据</span>
-          <span class="status-dot">服务运行中</span>
+          <span class="crumb">内部看板 / <b id="crumb-view">反馈</b></span>
+          <div class="topbar-right">
+            <span class="status-dot">服务运行中</span>
+            <button class="btn" id="logout-btn" type="button">退出登录</button>
+          </div>
         </header>
 
         <div class="content">
-          <div class="page-head">
-            <div>
-              <h1>线索数据</h1>
-              <p>来自官网“联系我们”表单的提交记录。</p>
-            </div>
-          </div>
-
-          <section class="stats" aria-label="数据概览">
-            <div class="stat"><span>总提交数</span><strong id="kpi-total">0</strong></div>
-            <div class="stat"><span>含留言</span><strong id="kpi-message">0</strong></div>
-            <div class="stat"><span>今日新增</span><strong id="kpi-today">0</strong></div>
-          </section>
-
-          <section class="panel">
-            <div class="panel-head">
-              <h2>提交列表</h2>
-              <div class="actions">
-                <button class="btn btn-danger" id="delete-btn" type="button" disabled>删除</button>
-                <a class="btn btn-primary" href="/api/leads/export.csv" id="export-link">导出 CSV</a>
-                <button class="btn" id="refresh-btn" type="button">刷新</button>
+          <section id="view-feedback">
+            <div class="page-head">
+              <div>
+                <h1>反馈</h1>
+                <p>来自官网候补名单与调研表单的提交记录。</p>
               </div>
             </div>
-            <div class="table-wrap" id="table-wrap">
-              <div class="loading">加载中...</div>
-            </div>
-            <div class="pager" id="pager" hidden></div>
+
+            <section class="stats" aria-label="数据概览">
+              <div class="stat"><span>总提交数</span><strong id="kpi-total">0</strong></div>
+              <div class="stat"><span>含留言</span><strong id="kpi-message">0</strong></div>
+              <div class="stat"><span>今日新增</span><strong id="kpi-today">0</strong></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head">
+                <h2>提交列表</h2>
+                <div class="actions">
+                  <button class="btn btn-danger" id="delete-btn" type="button" disabled>删除</button>
+                  <a class="btn btn-primary" href="/api/leads/export.csv" id="export-link">导出 CSV</a>
+                  <button class="btn" id="refresh-btn" type="button">刷新</button>
+                </div>
+              </div>
+              <div class="table-wrap" id="table-wrap">
+                <div class="loading">加载中...</div>
+              </div>
+              <div class="pager" id="pager" hidden></div>
+            </section>
+          </section>
+
+          <section id="view-users" class="placeholder-view" hidden>
+            <h1>用户分析</h1>
+            <p>即将上线：按来源、语言与关注亮点查看用户分布。</p>
+          </section>
+          <section id="view-mail" class="placeholder-view" hidden>
+            <h1>邮件</h1>
+            <p>即将上线：候补名单邮件与触达记录。</p>
+          </section>
+          <section id="view-ads" class="placeholder-view" hidden>
+            <h1>广告归因</h1>
+            <p>即将上线：Meta Pixel / CAPI 转化事件与投放归因。</p>
+          </section>
+          <section id="view-settings" class="placeholder-view" hidden>
+            <h1>设置</h1>
+            <p>即将上线：账号、权限与数据源配置。</p>
           </section>
         </div>
       </main>
@@ -297,6 +385,16 @@
       </div>
     </dialog>
 
+    <div class="login-overlay" id="login-overlay" hidden>
+      <form class="login-card" id="login-form">
+        <h2>登录后台</h2>
+        <label>用户名<input type="text" name="username" autocomplete="username" required /></label>
+        <label>密码<input type="password" name="password" autocomplete="current-password" required /></label>
+        <p class="login-error" id="login-error"></p>
+        <button class="btn btn-primary" type="submit">登录</button>
+      </form>
+    </div>
+
     <script>
       const PAGE_SIZE = 20;
       const selectedIds = new Set();
@@ -309,6 +407,54 @@
       const refreshBtn = document.getElementById("refresh-btn");
       const dialog = document.getElementById("message-dialog");
       const messageBody = document.getElementById("message-body");
+      const loginOverlay = document.getElementById("login-overlay");
+      const loginForm = document.getElementById("login-form");
+      const loginError = document.getElementById("login-error");
+      const logoutBtn = document.getElementById("logout-btn");
+      const crumbView = document.getElementById("crumb-view");
+      const VIEW_LABELS = {
+        feedback: "反馈",
+        users: "用户分析",
+        mail: "邮件",
+        ads: "广告归因",
+        settings: "设置",
+      };
+
+      function showView(view) {
+        const name = VIEW_LABELS[view] ? view : "feedback";
+        document.querySelectorAll(".nav-item[data-view]").forEach((item) => {
+          item.classList.toggle("active", item.dataset.view === name);
+        });
+        document.querySelectorAll("[id^='view-']").forEach((panel) => {
+          const match = panel.id === `view-${name}`;
+          panel.hidden = !match;
+          panel.classList.toggle("is-visible", match && panel.classList.contains("placeholder-view"));
+        });
+        if (crumbView) crumbView.textContent = VIEW_LABELS[name];
+        if (name === "feedback") load(currentPage);
+      }
+
+      document.querySelectorAll(".nav-item[data-view]").forEach((item) => {
+        item.addEventListener("click", () => showView(item.dataset.view));
+      });
+
+      function showLogin(message) {
+        loginOverlay.hidden = false;
+        loginError.textContent = message || "";
+      }
+      function hideLogin() {
+        loginOverlay.hidden = true;
+        loginError.textContent = "";
+      }
+
+      async function apiGet(path) {
+        const res = await fetch(path);
+        if (res.status === 401) {
+          showLogin();
+          throw new Error("unauthorized");
+        }
+        return res.json();
+      }
 
       const esc = (value) =>
         String(value ?? "").replace(/[&<>"']/g, (char) =>
@@ -426,7 +572,7 @@
       }
 
       async function loadStats() {
-        const stats = await fetch("/api/stats").then((res) => res.json());
+        const stats = await apiGet("/api/stats");
         document.getElementById("kpi-total").textContent = stats.total || 0;
         document.getElementById("kpi-message").textContent = stats.withMessage || 0;
         document.getElementById("kpi-today").textContent = stats.today || 0;
@@ -438,14 +584,16 @@
         tableWrap.innerHTML = '<div class="loading">加载中...</div>';
         refreshBtn.disabled = true;
         try {
-          const data = await fetch(`/api/leads?page=${page}&size=${PAGE_SIZE}`).then((res) => res.json());
+          const data = await apiGet(`/api/leads?page=${page}&size=${PAGE_SIZE}`);
           totalCount = data.total || 0;
           currentPage = data.page || page;
           renderTable(data.items || []);
           loadStats();
-        } catch {
-          tableWrap.innerHTML = '<div class="empty">加载失败，请刷新重试。</div>';
-          pager.hidden = true;
+        } catch (error) {
+          if (error.message !== "unauthorized") {
+            tableWrap.innerHTML = '<div class="empty">加载失败，请刷新重试。</div>';
+            pager.hidden = true;
+          }
         } finally {
           refreshBtn.disabled = false;
         }
@@ -461,6 +609,10 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ids }),
         });
+        if (response.status === 401) {
+          showLogin();
+          return;
+        }
         if (!response.ok) {
           window.alert("删除失败，请稍后再试。");
           return;
@@ -482,6 +634,32 @@
       document.getElementById("dialog-close").addEventListener("click", () => {
         if (dialog.open && typeof dialog.close === "function") dialog.close();
         else dialog.removeAttribute("open");
+      });
+
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const formData = new FormData(loginForm);
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: String(formData.get("username") || ""),
+            password: String(formData.get("password") || ""),
+          }),
+        });
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}));
+          loginError.textContent = data.error || "登录失败，请重试。";
+          return;
+        }
+        loginForm.reset();
+        hideLogin();
+        load(1);
+      });
+
+      logoutBtn.addEventListener("click", async () => {
+        await fetch("/api/logout", { method: "POST" });
+        showLogin();
       });
 
       load(1);
