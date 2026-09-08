@@ -1,0 +1,27 @@
+services:
+  linki:
+    image: node:22-bookworm
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - linki-data:/app/data
+    command: node --env-file=.env server.js
+    ports:
+      - "${PORT:-3000}:3000"
+      - "${ADMIN_PORT:-3001}:3001"
+    environment:
+      ADMIN_USER: ${ADMIN_USER:?ADMIN_USER is required}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?ADMIN_PASSWORD is required}
+      PORT: ${PORT:-3000}
+      ADMIN_PORT: ${ADMIN_PORT:-3001}
+      HOST: 0.0.0.0
+      TRUST_PROXY: ${TRUST_PROXY:-}
+      COOKIE_SECURE: ${COOKIE_SECURE:-}
+      META_CAPI_TOKEN: ${META_CAPI_TOKEN:-}
+      META_PIXEL_ID: ${META_PIXEL_ID:-28499637663005947}
+      META_TEST_EVENT_CODE: ${META_TEST_EVENT_CODE:-}
+      META_API_VERSION: ${META_API_VERSION:-v21.0}
+    restart: unless-stopped
+
+volumes:
+  linki-data:

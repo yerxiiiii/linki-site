@@ -201,7 +201,10 @@
     }
   }, { passive: true });
 
-  /* ---------- Meta Pixel 自定义事件（被拦截器屏蔽时静默跳过，不报错） ---------- */
+  /* ---------- Meta Pixel（被拦截器屏蔽时静默跳过，不报错） ---------- */
+  function pixelTrack(name, params, opts) {
+    if (typeof window.fbq === 'function') window.fbq('track', name, params || {}, opts || {});
+  }
   function pixelCustom(name, params) {
     if (typeof window.fbq === 'function') window.fbq('trackCustom', name, params || {});
   }
@@ -265,12 +268,12 @@
       window.location.href = 'success.html';
     }
 
-    // InitiateLead：用户首次与表单任意字段交互时触发一次
+    // InitiateLead：标准漏斗事件（勿用 trackCustom，否则 Meta 只认成同名自定义事件）
     let initiateLeadFired = false;
     function fireInitiateLead() {
       if (initiateLeadFired) return;
       initiateLeadFired = true;
-      pixelCustom('InitiateLead');
+      pixelTrack('InitiateLead');
     }
     form.addEventListener('input', fireInitiateLead);
     form.addEventListener('change', fireInitiateLead);

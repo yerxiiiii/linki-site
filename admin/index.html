@@ -258,34 +258,6 @@
         .page-head { display: block; }
       }
 
-      .login-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(45, 35, 28, 0.55);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 100;
-      }
-      .login-overlay[hidden] { display: none; }
-      .login-card {
-        background: var(--panel);
-        border-radius: 8px;
-        padding: 28px;
-        width: min(92vw, 360px);
-        display: grid;
-        gap: 14px;
-        box-shadow: 0 24px 64px rgba(45, 35, 28, 0.28);
-      }
-      .login-card h2 { margin: 0; font-size: 20px; }
-      .login-card label { display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
-      .login-card input {
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 10px 12px;
-        color: var(--ink);
-      }
-      .login-error { color: var(--danger); font-size: 13px; min-height: 18px; margin: 0; }
       .topbar-right { display: flex; align-items: center; gap: 14px; }
     </style>
   </head>
@@ -385,16 +357,6 @@
       </div>
     </dialog>
 
-    <div class="login-overlay" id="login-overlay" hidden>
-      <form class="login-card" id="login-form">
-        <h2>登录后台</h2>
-        <label>用户名<input type="text" name="username" autocomplete="username" required /></label>
-        <label>密码<input type="password" name="password" autocomplete="current-password" required /></label>
-        <p class="login-error" id="login-error"></p>
-        <button class="btn btn-primary" type="submit">登录</button>
-      </form>
-    </div>
-
     <script>
       const PAGE_SIZE = 20;
       const selectedIds = new Set();
@@ -407,9 +369,6 @@
       const refreshBtn = document.getElementById("refresh-btn");
       const dialog = document.getElementById("message-dialog");
       const messageBody = document.getElementById("message-body");
-      const loginOverlay = document.getElementById("login-overlay");
-      const loginForm = document.getElementById("login-form");
-      const loginError = document.getElementById("login-error");
       const logoutBtn = document.getElementById("logout-btn");
       const crumbView = document.getElementById("crumb-view");
       const VIEW_LABELS = {
@@ -419,6 +378,10 @@
         ads: "广告归因",
         settings: "设置",
       };
+
+      function goLogin() {
+        window.location.replace("/login");
+      }
 
       function showView(view) {
         const name = VIEW_LABELS[view] ? view : "feedback";
@@ -438,19 +401,10 @@
         item.addEventListener("click", () => showView(item.dataset.view));
       });
 
-      function showLogin(message) {
-        loginOverlay.hidden = false;
-        loginError.textContent = message || "";
-      }
-      function hideLogin() {
-        loginOverlay.hidden = true;
-        loginError.textContent = "";
-      }
-
       async function apiGet(path) {
-        const res = await fetch(path);
+        const res = await fetch(path, { credentials: "same-origin" });
         if (res.status === 401) {
-          showLogin();
+          goLogin();
           throw new Error("unauthorized");
         }
         return res.json();
@@ -606,11 +560,12 @@
         if (!ok) return;
         const response = await fetch("/api/leads", {
           method: "DELETE",
+          credentials: "same-origin",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ids }),
         });
         if (response.status === 401) {
-          showLogin();
+          goLogin();
           return;
         }
         if (!response.ok) {
@@ -636,33 +591,24 @@
         else dialog.removeAttribute("open");
       });
 
-      loginForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        const formData = new FormData(loginForm);
-        const response = await fetch("/api/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: String(formData.get("username") || ""),
-            password: String(formData.get("password") || ""),
-          }),
-        });
-        if (!response.ok) {
-          const data = await response.json().catch(() => ({}));
-          loginError.textContent = data.error || "登录失败，请重试。";
-          return;
-        }
-        loginForm.reset();
-        hideLogin();
-        load(1);
-      });
-
       logoutBtn.addEventListener("click", async () => {
-        await fetch("/api/logout", { method: "POST" });
-        showLogin();
+        await fetch("/api/logout", { method: "POST", credentials: "same-origin" });
+        goLogin();
       });
 
-      load(1);
+      (async function init() {
+        try {
+          const res = await fetch("/api/session", { credentials: "same-origin" });
+          const data = await res.json();
+          if (!data.authenticated) {
+            goLogin();
+            return;
+          }
+          load(1);
+        } catch (_) {
+          goLogin();
+        }
+      })();
     </script>
   </body>
 </html>

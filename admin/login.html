@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Linki 后台登录</title>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <style>
+      :root {
+        --bg: #f6f1e8;
+        --panel: #ffffff;
+        --ink: #3d2b1f;
+        --muted: #806f61;
+        --line: rgba(61, 43, 31, 0.14);
+        --accent: #7fb69a;
+        --accent-dark: #4f806a;
+        --danger: #b45a4f;
+      }
+      * { box-sizing: border-box; }
+      html, body { min-height: 100%; margin: 0; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at 12% 18%, rgba(127, 182, 154, 0.18), transparent 42%),
+          radial-gradient(circle at 88% 12%, rgba(255, 142, 105, 0.12), transparent 36%),
+          var(--bg);
+        color: var(--ink);
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+      .card {
+        width: min(92vw, 400px);
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 28px;
+        box-shadow: 0 24px 64px rgba(45, 35, 28, 0.12);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 22px;
+        font-weight: 800;
+        font-size: 18px;
+      }
+      .brand-mark {
+        width: 32px;
+        height: 32px;
+        background: url("/assets/linki-mark.svg") center / contain no-repeat;
+      }
+      h1 { margin: 0 0 6px; font-size: 24px; line-height: 1.2; }
+      .sub { margin: 0 0 22px; color: var(--muted); font-size: 14px; }
+      form { display: grid; gap: 14px; }
+      label { display: grid; gap: 6px; font-size: 13px; color: var(--muted); font-weight: 700; }
+      input {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 12px 14px;
+        font: inherit;
+        color: var(--ink);
+        background: #fff;
+      }
+      input:focus {
+        outline: 2px solid rgba(127, 182, 154, 0.45);
+        outline-offset: 1px;
+      }
+      button {
+        margin-top: 4px;
+        min-height: 46px;
+        border: 0;
+        border-radius: 999px;
+        background: var(--accent);
+        color: #fff;
+        font: inherit;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      button:hover:not(:disabled) { background: var(--accent-dark); }
+      button:disabled { opacity: 0.65; cursor: default; }
+      .error {
+        min-height: 18px;
+        margin: 0;
+        color: var(--danger);
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>Linki 后台</span>
+      </div>
+      <h1>登录</h1>
+      <p class="sub">使用管理员账号进入线索看板。</p>
+      <form id="login-form" novalidate>
+        <label>
+          管理员账号
+          <input type="text" name="username" autocomplete="username" required autofocus />
+        </label>
+        <label>
+          密码
+          <input type="password" name="password" autocomplete="current-password" required />
+        </label>
+        <p class="error" id="login-error" role="alert"></p>
+        <button type="submit" id="submit-btn">登录</button>
+      </form>
+    </main>
+    <script>
+      const form = document.getElementById("login-form");
+      const errorEl = document.getElementById("login-error");
+      const submitBtn = document.getElementById("submit-btn");
+
+      async function ensureLoggedOutOrRedirect() {
+        try {
+          const res = await fetch("/api/session", { credentials: "same-origin" });
+          const data = await res.json();
+          if (data.authenticated) window.location.replace("/");
+        } catch (_) {}
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        errorEl.textContent = "";
+        submitBtn.disabled = true;
+        submitBtn.textContent = "登录中…";
+        const formData = new FormData(form);
+        try {
+          const response = await fetch("/api/login", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              username: String(formData.get("username") || ""),
+              password: String(formData.get("password") || ""),
+            }),
+          });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            errorEl.textContent = data.error || "登录失败，请重试。";
+            return;
+          }
+          window.location.replace("/");
+        } catch (_) {
+          errorEl.textContent = "网络异常，请稍后再试。";
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "登录";
+        }
+      });
+
+      ensureLoggedOutOrRedirect();
+    </script>
+  </body>
+</html>

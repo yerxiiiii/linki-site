@@ -1,7 +1,7 @@
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import { dirname, extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createHash, randomBytes } from 'node:crypto';
+import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import http from 'node:http';
 import db from './db.js';
 
@@ -12,20 +12,21 @@ const adminDir = join(rootDir, 'admin');
 const PORT = Number(process.env.PORT) || 3000;
 const ADMIN_PORT = Number(process.env.ADMIN_PORT) || 3001;
 const HOST = process.env.HOST || '0.0.0.0';
-const ADMIN_PUBLIC = process.env.ADMIN_PUBLIC === '1';
 const RATE_WINDOW_MS = Number(process.env.RATE_LIMIT_WINDOW_MS) || 60_000;
 const RATE_MAX = Number(process.env.RATE_LIMIT_MAX) || 8;
 const BODY_LIMIT = 64 * 1024;
 const startedAt = Date.now();
 
 const TRUST_PROXY = parseTrustProxy(process.env.TRUST_PROXY);
-const ALLOWED_IPS = new Set(['127.0.0.1', '::1', ...parseList(process.env.ADMIN_ALLOWED_IPS)]);
 
-// ---- 后台账号登录（IP 白名单之外的补充访问方式）----
-const ADMIN_USER = process.env.ADMIN_USER || 'admin';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '123456';
+// ---- 后台账号登录（独立登录页 + 内存 Session）----
+const ADMIN_USER = String(process.env.ADMIN_USER || '').trim();
+const ADMIN_PASSWORD = String(process.env.ADMIN_PASSWORD || '');
+if (!ADMIN_USER || !ADMIN_PASSWORD) {
+  console.error('缺少 ADMIN_USER / ADMIN_PASSWORD，后台拒绝启动。请在 .env 中配置。');
+  process.exit(1);
+}
 const SESSION_COOKIE = 'linki_admin_session';
-const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 const LOGIN_MAX_ATTEMPTS = 5;
 const sessions = new Map();
@@ -79,9 +80,6 @@ rateSweep.unref();
 
 const sessionSweep = setInterval(() => {
   const now = Date.now();
-  for (const [token, expiresAt] of sessions) {
-    if (now >= expiresAt) sessions.delete(token);
-  }
   for (const [ip, rec] of loginAttempts) {
     if (now >= rec.resetAt) loginAttempts.delete(ip);
   }
@@ -130,22 +128,42 @@ function getCookieValue(req, name) {
   return '';
 }
 
+function isHttpsRequest(req) {
+  if (process.env.COOKIE_SECURE === '1') return true;
+  const proto = String(req.headers['x-forwarded-proto'] || '')
+    .split(',')[0]
+    .trim()
+    .toLowerCase();
+  return proto === 'https';
+}
+
+function cookieFlags(req, { clear = false } = {}) {
+  const parts = ['HttpOnly', 'SameSite=Strict', 'Path=/'];
+  if (isHttpsRequest(req)) parts.push('Secure');
+  if (clear) parts.push('Max-Age=0');
+  return parts.join('; ');
+}
+
 function createSession() {
-  const token = randomBytes(24).toString('hex');
-  sessions.set(token, Date.now() + SESSION_TTL_MS);
+  const token = randomBytes(32).toString('hex');
+  sessions.set(token, { createdAt: Date.now() });
   return token;
 }
 
 function hasValidSession(req) {
   const token = getCookieValue(req, SESSION_COOKIE);
   if (!token) return false;
-  const expiresAt = sessions.get(token);
-  if (!expiresAt) return false;
-  if (Date.now() > expiresAt) {
-    sessions.delete(token);
+  return sessions.has(token);
+}
+
+function safeEqualString(a, b) {
+  const bufA = Buffer.from(String(a));
+  const bufB = Buffer.from(String(b));
+  if (bufA.length !== bufB.length) {
+    timingSafeEqual(bufA, bufA);
     return false;
   }
-  return true;
+  return timingSafeEqual(bufA, bufB);
 }
 
 function checkLoginRate(ip) {
@@ -447,12 +465,15 @@ function serveStatic(res, baseDir, pathname) {
   createReadStream(filePath).pipe(res);
 }
 
-function assertAdminAllowed(req, res) {
-  if (ADMIN_PUBLIC) return true;
-  if (ALLOWED_IPS.has(clientIp(req))) return true;
+function assertAdminSession(req, res) {
   if (hasValidSession(req)) return true;
   sendError(res, 401, '未登录');
   return false;
+}
+
+function redirect(res, location) {
+  res.writeHead(302, { Location: location });
+  res.end();
 }
 
 async function handleLogin(req, res) {
@@ -466,10 +487,12 @@ async function handleLogin(req, res) {
   const username = clean(body.username, 50);
   const password = String(body.password ?? '');
 
-  if (username === ADMIN_USER && password === ADMIN_PASSWORD) {
+  const userOk = safeEqualString(username, ADMIN_USER);
+  const passOk = safeEqualString(password, ADMIN_PASSWORD);
+  if (userOk && passOk) {
     rec.count = 0;
     const token = createSession();
-    res.setHeader('Set-Cookie', `${SESSION_COOKIE}=${token}; HttpOnly; Path=/; Max-Age=${Math.floor(SESSION_TTL_MS / 1000)}; SameSite=Lax`);
+    res.setHeader('Set-Cookie', `${SESSION_COOKIE}=${token}; ${cookieFlags(req)}`);
     return sendJson(res, 200, { ok: true });
   }
 
@@ -480,8 +503,12 @@ async function handleLogin(req, res) {
 function handleLogout(req, res) {
   const token = getCookieValue(req, SESSION_COOKIE);
   if (token) sessions.delete(token);
-  res.setHeader('Set-Cookie', `${SESSION_COOKIE}=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax`);
+  res.setHeader('Set-Cookie', `${SESSION_COOKIE}=; ${cookieFlags(req, { clear: true })}`);
   return sendJson(res, 200, { ok: true });
+}
+
+function handleSession(req, res) {
+  return sendJson(res, 200, { authenticated: hasValidSession(req) });
 }
 
 async function handlePublic(req, res) {
@@ -537,18 +564,30 @@ async function handleAdmin(req, res) {
 
   try {
     if (req.method === 'GET' && url.pathname === '/healthz') return health(res);
-    if (req.method === 'POST' && url.pathname === '/api/login') return handleLogin(req, res);
-    if (req.method === 'POST' && url.pathname === '/api/logout') return handleLogout(req, res);
 
-    // 页面外壳本身不含数据，无需登录即可加载；数据类接口仍受下方的登录/白名单校验保护
-    if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {
-      return serveStatic(res, adminDir, '/index.html');
+    // 公开：登录页与登录接口
+    if ((req.method === 'GET' || req.method === 'HEAD') && (url.pathname === '/login' || url.pathname === '/login.html')) {
+      return serveStatic(res, adminDir, '/login.html');
     }
-    if (req.method === 'GET' && url.pathname === '/assets/favicon.svg') {
+    if (req.method === 'POST' && url.pathname === '/api/login') return handleLogin(req, res);
+    if ((req.method === 'GET' || req.method === 'HEAD') && url.pathname === '/assets/favicon.svg') {
       return serveStatic(res, rootDir, '/assets/favicon.svg');
     }
+    if ((req.method === 'GET' || req.method === 'HEAD') && url.pathname === '/assets/linki-mark.svg') {
+      return serveStatic(res, rootDir, '/assets/linki-mark.svg');
+    }
 
-    if (!assertAdminAllowed(req, res)) return;
+    if (req.method === 'GET' && url.pathname === '/api/session') return handleSession(req, res);
+    if (req.method === 'POST' && url.pathname === '/api/logout') return handleLogout(req, res);
+
+    // 根路径：已登录进后台，未登录跳转登录页
+    if ((req.method === 'GET' || req.method === 'HEAD') && (url.pathname === '/' || url.pathname === '/index.html')) {
+      if (!hasValidSession(req)) return redirect(res, '/login');
+      return serveStatic(res, adminDir, '/index.html');
+    }
+
+    // 其余后台页面与数据接口均需 Session
+    if (!assertAdminSession(req, res)) return;
 
     if (req.method === 'GET' && url.pathname === '/api/stats') return sendJson(res, 200, getStats());
 
@@ -599,7 +638,7 @@ publicServer.listen(PORT, HOST, () => {
 
 adminServer.listen(ADMIN_PORT, HOST, () => {
   console.log(`内部看板：http://localhost:${ADMIN_PORT}`);
-  if (!ADMIN_PUBLIC) console.log(`后台 IP 白名单：${[...ALLOWED_IPS].join(', ')}`);
+  console.log('后台鉴权：独立登录页 + 内存 Session（需 ADMIN_USER / ADMIN_PASSWORD）');
 });
 
 function shutdown(signal) {
