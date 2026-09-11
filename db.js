@@ -20,20 +20,55 @@ db.exec(`
     email             TEXT NOT NULL,
     contact           TEXT NOT NULL DEFAULT '',
     intent            TEXT NOT NULL,
+    gender            TEXT NOT NULL DEFAULT '',
+    age_range         TEXT NOT NULL DEFAULT '',
     selected_features TEXT NOT NULL DEFAULT '',
     message           TEXT NOT NULL DEFAULT '',
     lang              TEXT NOT NULL DEFAULT 'zh',
     page_path         TEXT NOT NULL DEFAULT '',
+    utm_source        TEXT NOT NULL DEFAULT '',
+    utm_medium        TEXT NOT NULL DEFAULT '',
+    utm_campaign      TEXT NOT NULL DEFAULT '',
+    utm_content       TEXT NOT NULL DEFAULT '',
+    utm_term          TEXT NOT NULL DEFAULT '',
+    agent_id          TEXT NOT NULL DEFAULT '',
+    prompt_id         TEXT NOT NULL DEFAULT '',
+    creative_id       TEXT NOT NULL DEFAULT '',
+    landing_path      TEXT NOT NULL DEFAULT '',
+    referrer          TEXT NOT NULL DEFAULT '',
     ip                TEXT NOT NULL DEFAULT '',
     user_agent        TEXT NOT NULL DEFAULT '',
+    geo_country       TEXT NOT NULL DEFAULT '',
+    geo_region        TEXT NOT NULL DEFAULT '',
+    geo_city          TEXT NOT NULL DEFAULT '',
+    geo_checked       INTEGER NOT NULL DEFAULT 0,
     created_at        TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
   );
 `);
 
-try {
-  db.exec("ALTER TABLE leads ADD COLUMN selected_features TEXT NOT NULL DEFAULT ''");
-} catch {
-  // 已存在该列（老数据库迁移场景），忽略
+const leadColumns = new Set(db.prepare('PRAGMA table_info(leads)').all().map((column) => column.name));
+const leadMigrations = {
+  selected_features: "TEXT NOT NULL DEFAULT ''",
+  gender: "TEXT NOT NULL DEFAULT ''",
+  age_range: "TEXT NOT NULL DEFAULT ''",
+  utm_source: "TEXT NOT NULL DEFAULT ''",
+  utm_medium: "TEXT NOT NULL DEFAULT ''",
+  utm_campaign: "TEXT NOT NULL DEFAULT ''",
+  utm_content: "TEXT NOT NULL DEFAULT ''",
+  utm_term: "TEXT NOT NULL DEFAULT ''",
+  agent_id: "TEXT NOT NULL DEFAULT ''",
+  prompt_id: "TEXT NOT NULL DEFAULT ''",
+  creative_id: "TEXT NOT NULL DEFAULT ''",
+  landing_path: "TEXT NOT NULL DEFAULT ''",
+  referrer: "TEXT NOT NULL DEFAULT ''",
+  geo_country: "TEXT NOT NULL DEFAULT ''",
+  geo_region: "TEXT NOT NULL DEFAULT ''",
+  geo_city: "TEXT NOT NULL DEFAULT ''",
+  geo_checked: 'INTEGER NOT NULL DEFAULT 0',
+};
+
+for (const [name, definition] of Object.entries(leadMigrations)) {
+  if (!leadColumns.has(name)) db.exec(`ALTER TABLE leads ADD COLUMN ${name} ${definition}`);
 }
 
 export default db;

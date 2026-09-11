@@ -100,6 +100,27 @@
             <span data-i18n="form.email">Email</span>
             <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
           </label>
+          <label class="form-field">
+            <span data-i18n="form.gender">Gender</span>
+            <select name="gender" required>
+              <option value="" selected disabled data-i18n="form.selectPlaceholder">Select one</option>
+              <option value="female" data-i18n="form.genderFemale">Female</option>
+              <option value="male" data-i18n="form.genderMale">Male</option>
+              <option value="nonbinary" data-i18n="form.genderNonbinary">Non-binary / Other</option>
+              <option value="prefer_not_say" data-i18n="form.genderPrivate">Prefer not to say</option>
+            </select>
+          </label>
+          <label class="form-field">
+            <span data-i18n="form.ageRange">Age range</span>
+            <select name="ageRange" required>
+              <option value="" selected disabled data-i18n="form.selectPlaceholder">Select one</option>
+              <option value="under_16" data-i18n="form.ageUnder16">Under 16</option>
+              <option value="16_25" data-i18n="form.age16To25">16–25</option>
+              <option value="25_35" data-i18n="form.age25To35">25–35</option>
+              <option value="35_45" data-i18n="form.age35To45">35–45</option>
+              <option value="over_45" data-i18n="form.ageOver45">45+</option>
+            </select>
+          </label>
           <fieldset class="form-features form-field--wide">
             <legend data-i18n="form.featuresLegend">Which Linki features matter most to you?</legend>
             <p class="form-features__helper" data-i18n="form.featuresHelper">Pick anything you care about—it shapes what we build next.</p>

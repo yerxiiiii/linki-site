@@ -209,6 +209,41 @@
     if (typeof window.fbq === 'function') window.fbq('trackCustom', name, params || {});
   }
 
+  /* ---------- 首次触点归因：保留 UTM、agent、prompt 与素材编号 ---------- */
+  const ATTRIBUTION_KEY = 'linki-first-attribution';
+  function readAttribution() {
+    const params = new URLSearchParams(window.location.search);
+    const pick = function () {
+      for (let i = 0; i < arguments.length; i += 1) {
+        const value = params.get(arguments[i]);
+        if (value) return value;
+      }
+      return '';
+    };
+    const current = {
+      utmSource: pick('utm_source'),
+      utmMedium: pick('utm_medium'),
+      utmCampaign: pick('utm_campaign'),
+      utmContent: pick('utm_content'),
+      utmTerm: pick('utm_term'),
+      agentId: pick('agent_id', 'agent'),
+      promptId: pick('prompt_id', 'prompt'),
+      creativeId: pick('creative_id', 'creative', 'ad_id'),
+      landingPath: window.location.pathname + window.location.search,
+      referrer: document.referrer,
+    };
+    let first = {};
+    try { first = JSON.parse(localStorage.getItem(ATTRIBUTION_KEY) || '{}'); } catch (_) {}
+    const hasCampaignSignal = current.utmSource || current.utmCampaign || current.agentId || current.promptId || current.creativeId;
+    const firstHasCampaignSignal = first.utmSource || first.utmCampaign || first.agentId || first.promptId || first.creativeId;
+    if (!first.landingPath || (!firstHasCampaignSignal && hasCampaignSignal)) {
+      first = current;
+      try { localStorage.setItem(ATTRIBUTION_KEY, JSON.stringify(first)); } catch (_) {}
+    }
+    return first;
+  }
+  const firstAttribution = readAttribution();
+
   // ClickJoinWaitlist：点任意「加入候补 / Join now」入口（对齐 Mimmu 漏斗）
   document.querySelectorAll('[data-pixel-event="ClickJoinWaitlist"]').forEach(function (link) {
     link.addEventListener('click', function () {
@@ -223,12 +258,12 @@
     const submitButton = form.querySelector('button[type="submit"]');
     const messagesByLang = {
       zh: {
-        missing: '请填写姓名和邮箱。',
+        missing: '请完整填写姓名、邮箱、性别和年龄段。',
         invalidEmail: '请填写有效的邮箱地址。',
         error: '提交失败，请稍后再试。',
       },
       en: {
-        missing: 'Please complete your name and email.',
+        missing: 'Please complete your name, email, gender and age range.',
         invalidEmail: 'Please enter a valid email address.',
         error: 'Submission failed. Please try again later.',
       },
@@ -304,11 +339,13 @@
       const email = String(formData.get('email') || '').trim();
       const name = String(formData.get('name') || '').trim();
       const intent = String(formData.get('intent') || 'experience').trim();
+      const gender = String(formData.get('gender') || '').trim();
+      const ageRange = String(formData.get('ageRange') || '').trim();
       const selectedFeatures = formData.getAll('selectedFeatures').map(String);
 
       setStatus('', false);
 
-      if (!name || !email) {
+      if (!name || !email || !gender || !ageRange) {
         setStatus(messages.missing, true);
         return;
       }
@@ -321,8 +358,9 @@
       const payload = {
         name,
         email,
-        contact: '',
         intent,
+        gender,
+        ageRange,
         selectedFeatures,
         message: String(formData.get('message') || '').trim(),
         website: String(formData.get('website') || '').trim(),
@@ -331,6 +369,7 @@
         eventId: genEventId(),
         fbp: getCookie('_fbp'),
         fbc: getCookie('_fbc'),
+        attribution: firstAttribution,
       };
       const leadParams = {
         content_category: selectedFeatures.join(','),

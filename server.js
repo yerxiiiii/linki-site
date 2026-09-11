@@ -61,13 +61,38 @@ const INTENT_LABEL = {
   media: '媒体咨询',
   other: '其他',
 };
+const GENDERS = ['female', 'male', 'nonbinary', 'prefer_not_say'];
+const GENDER_LABEL = {
+  female: '女性',
+  male: '男性',
+  nonbinary: '非二元 / 其他',
+  prefer_not_say: '不愿透露',
+};
+const AGE_RANGES = ['under_16', '16_25', '25_35', '35_45', 'over_45'];
+const AGE_RANGE_LABEL = {
+  under_16: '16 岁以下',
+  '16_25': '16–25 岁',
+  '25_35': '25–35 岁',
+  '35_45': '35–45 岁',
+  over_45: '45 岁以上',
+};
 
 const insertLeadStmt = db.prepare(`
-  INSERT INTO leads (name, email, contact, intent, selected_features, message, lang, page_path, ip, user_agent)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  INSERT INTO leads (
+    name, email, intent, gender, age_range, selected_features, message, lang, page_path,
+    utm_source, utm_medium, utm_campaign, utm_content, utm_term,
+    agent_id, prompt_id, creative_id, landing_path, referrer, ip, user_agent
+  )
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`);
+const updateLeadGeoStmt = db.prepare(`
+  UPDATE leads
+  SET geo_country = ?, geo_region = ?, geo_city = ?, geo_checked = 1
+  WHERE id = ?
 `);
 const deleteLeadStmt = db.prepare('DELETE FROM leads WHERE id = ?');
 const pingStmt = db.prepare('SELECT 1 AS ok');
+const geoCache = new Map();
 
 const rateHits = new Map();
 const rateSweep = setInterval(() => {
@@ -255,18 +280,34 @@ function validateLead(body) {
 
   const name = clean(body.name, 50);
   const email = clean(body.email, 120).toLowerCase();
-  const contact = clean(body.contact, 80);
   const intent = clean(body.intent, 40);
+  const gender = clean(body.gender, 24);
+  const ageRange = clean(body.ageRange, 24);
   const selectedFeatures = cleanList(body.selectedFeatures, 12, 60).join(', ');
   const message = clean(body.message, 500);
   const lang = clean(body.lang, 8) === 'en' ? 'en' : 'zh';
   const pagePath = clean(body.pagePath, 160);
+  const rawAttribution = body.attribution && typeof body.attribution === 'object' ? body.attribution : {};
+  const attribution = {
+    utmSource: clean(rawAttribution.utmSource, 120),
+    utmMedium: clean(rawAttribution.utmMedium, 120),
+    utmCampaign: clean(rawAttribution.utmCampaign, 160),
+    utmContent: clean(rawAttribution.utmContent, 160),
+    utmTerm: clean(rawAttribution.utmTerm, 160),
+    agentId: clean(rawAttribution.agentId, 120),
+    promptId: clean(rawAttribution.promptId, 160),
+    creativeId: clean(rawAttribution.creativeId, 160),
+    landingPath: clean(rawAttribution.landingPath, 300),
+    referrer: clean(rawAttribution.referrer, 300),
+  };
 
   if (!name) return { error: '请填写姓名' };
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: '邮箱格式不正确' };
   if (!INTENTS.includes(intent)) return { error: '请选择有效的关注方向' };
+  if (!GENDERS.includes(gender)) return { error: '请选择性别' };
+  if (!AGE_RANGES.includes(ageRange)) return { error: '请选择年龄段' };
 
-  return { value: { name, email, contact, intent, selectedFeatures, message, lang, pagePath } };
+  return { value: { name, email, intent, gender, ageRange, selectedFeatures, message, lang, pagePath, attribution } };
 }
 
 // 把邮箱规范化后做 SHA-256（CAPI 要求 PII 哈希后传）
@@ -299,6 +340,12 @@ async function sendCapiLead({ value, ip, userAgent, sourceUrl, body }) {
         custom_data: {
           content_category: selectedFeatures.join(','),
           num_items: selectedFeatures.length,
+          gender: value.gender,
+          age_range: value.ageRange,
+          agent_id: value.attribution.agentId || undefined,
+          prompt_id: value.attribution.promptId || undefined,
+          creative_id: value.attribution.creativeId || undefined,
+          utm_campaign: value.attribution.utmCampaign || undefined,
         },
       }],
     };
@@ -318,45 +365,162 @@ async function sendCapiLead({ value, ip, userAgent, sourceUrl, body }) {
   }
 }
 
-function rowToLead(row) {
+function isPrivateIp(ip) {
+  if (!ip || ip === 'unknown') return true;
+  if (ip === '127.0.0.1' || ip === '::1') return true;
+  if (ip.startsWith('10.') || ip.startsWith('192.168.') || ip.startsWith('169.254.')) return true;
+  if (/^172\.(1[6-9]|2\d|3[01])\./.test(ip)) return true;
+  if (ip.startsWith('fc') || ip.startsWith('fd') || ip.startsWith('fe80:')) return true;
+  return false;
+}
+
+function formatGeoLabel({ country = '', region = '', city = '' } = {}) {
+  return [city, region, country].filter(Boolean).join(', ');
+}
+
+async function lookupGeo(ip) {
+  const normalized = normalizeIp(ip);
+  if (!normalized || isPrivateIp(normalized)) {
+    return { country: '', region: '', city: '', label: '', checked: true };
+  }
+  if (geoCache.has(normalized)) return geoCache.get(normalized);
+
+  const fromParts = (country, region, city) => {
+    const geo = {
+      country: String(country || '').trim(),
+      region: String(region || '').trim(),
+      city: String(city || '').trim(),
+      checked: true,
+    };
+    geo.label = formatGeoLabel(geo);
+    return geo;
+  };
+
+  try {
+    const primary = await fetch(
+      `http://ip-api.com/json/${encodeURIComponent(normalized)}?lang=zh-CN&fields=status,country,regionName,city`,
+      { signal: AbortSignal.timeout(5000) },
+    );
+    if (primary.ok) {
+      const data = await primary.json();
+      if (data.status === 'success') {
+        const geo = fromParts(data.country, data.regionName, data.city);
+        geoCache.set(normalized, geo);
+        return geo;
+      }
+      const empty = fromParts('', '', '');
+      geoCache.set(normalized, empty);
+      return empty;
+    }
+  } catch {
+    // fall through to HTTPS backup
+  }
+
+  try {
+    const backup = await fetch(`https://ipwho.is/${encodeURIComponent(normalized)}`, {
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!backup.ok) return { country: '', region: '', city: '', label: '', checked: false };
+    const data = await backup.json();
+    if (!data.success) {
+      const empty = fromParts('', '', '');
+      geoCache.set(normalized, empty);
+      return empty;
+    }
+    const geo = fromParts(data.country, data.region, data.city);
+    geoCache.set(normalized, geo);
+    return geo;
+  } catch {
+    return { country: '', region: '', city: '', label: '', checked: false };
+  }
+}
+
+async function resolveLeadGeo(row) {
+  if (row.geo_checked) {
+    return {
+      country: row.geo_country || '',
+      region: row.geo_region || '',
+      city: row.geo_city || '',
+      label: formatGeoLabel({
+        country: row.geo_country,
+        region: row.geo_region,
+        city: row.geo_city,
+      }),
+    };
+  }
+  const geo = await lookupGeo(row.ip);
+  if (geo.checked) updateLeadGeoStmt.run(geo.country, geo.region, geo.city, row.id);
+  return geo;
+}
+
+function fillLeadGeoAsync(id, ip) {
+  lookupGeo(ip)
+    .then((geo) => {
+      if (geo.checked) updateLeadGeoStmt.run(geo.country, geo.region, geo.city, id);
+    })
+    .catch(() => {});
+}
+
+function rowToLead(row, geo = null) {
+  const resolved = geo || {
+    country: row.geo_country || '',
+    region: row.geo_region || '',
+    city: row.geo_city || '',
+    label: formatGeoLabel({
+      country: row.geo_country,
+      region: row.geo_region,
+      city: row.geo_city,
+    }),
+  };
   return {
     id: row.id,
     name: row.name,
     email: row.email,
-    contact: row.contact,
     intent: row.intent,
     intentLabel: INTENT_LABEL[row.intent] || row.intent,
+    gender: row.gender,
+    genderLabel: GENDER_LABEL[row.gender] || '',
+    ageRange: row.age_range,
+    ageRangeLabel: AGE_RANGE_LABEL[row.age_range] || '',
     selectedFeatures: row.selected_features,
     message: row.message,
     lang: row.lang,
     pagePath: row.page_path,
+    utmSource: row.utm_source,
+    utmMedium: row.utm_medium,
+    utmCampaign: row.utm_campaign,
+    utmContent: row.utm_content,
+    utmTerm: row.utm_term,
+    agentId: row.agent_id,
+    promptId: row.prompt_id,
+    creativeId: row.creative_id,
+    landingPath: row.landing_path,
+    referrer: row.referrer,
+    geoCountry: resolved.country || '',
+    geoRegion: resolved.region || '',
+    geoCity: resolved.city || '',
+    geoLabel: resolved.label || '',
     createdAt: row.created_at,
   };
 }
 
-function queryLeads({ page = 1, size = 20, all = false } = {}) {
+async function queryLeads({ page = 1, size = 20, all = false } = {}) {
+  const mapRows = async (rows) =>
+    Promise.all(rows.map(async (row) => rowToLead(row, await resolveLeadGeo(row))));
+
   if (all) {
-    return {
-      items: db
-        .prepare(
-          'SELECT id, name, email, contact, intent, selected_features, message, lang, page_path, created_at FROM leads ORDER BY id DESC',
-        )
-        .all()
-        .map(rowToLead),
-    };
+    const rows = db.prepare('SELECT * FROM leads ORDER BY id DESC').all();
+    return { items: await mapRows(rows) };
   }
 
   const safePage = Math.max(1, Number.parseInt(page, 10) || 1);
   const safeSize = Math.min(200, Math.max(1, Number.parseInt(size, 10) || 20));
   const total = db.prepare('SELECT COUNT(*) AS n FROM leads').get().n;
-  const items = db
-    .prepare(
-      'SELECT id, name, email, contact, intent, selected_features, message, lang, page_path, created_at FROM leads ORDER BY id DESC LIMIT ? OFFSET ?',
-    )
-    .all(safeSize, (safePage - 1) * safeSize)
-    .map(rowToLead);
+  const rows = db
+    .prepare('SELECT * FROM leads ORDER BY id DESC LIMIT ? OFFSET ?')
+    .all(safeSize, (safePage - 1) * safeSize);
 
-  return { items, total, page: safePage, size: safeSize };
+  return { items: await mapRows(rows), total, page: safePage, size: safeSize };
 }
 
 function deleteLeads(ids) {
@@ -384,24 +548,110 @@ function getStats() {
     .get();
 }
 
+const FEATURE_LABELS = {
+  'Season-synced screen': '四季与天气同步',
+  'Camera-free presence sensing': '无摄像头存在感知',
+  'Responsive touch interaction': '触碰互动反馈',
+  'Naked-eye 3D display': '裸眼 3D 显示',
+  'Non-visual environmental sensing': '非视觉环境感知',
+  'Magnetic character interface': '磁吸角色切换',
+};
+
+function getAttribution(days = 30) {
+  const safeDays = [7, 30, 90].includes(Number(days)) ? Number(days) : days === 'all' ? 'all' : 30;
+  const rows = safeDays === 'all'
+    ? db.prepare('SELECT * FROM leads ORDER BY id DESC').all()
+    : db.prepare("SELECT * FROM leads WHERE created_at >= datetime('now', ?) ORDER BY id DESC").all(`-${safeDays} days`);
+  const total = rows.length;
+  const countBy = (getter) => {
+    const counts = new Map();
+    rows.forEach((row) => {
+      const value = getter(row);
+      if (value) counts.set(value, (counts.get(value) || 0) + 1);
+    });
+    return [...counts.entries()]
+      .map(([label, count]) => ({ label, count, share: total ? Math.round((count / total) * 1000) / 10 : 0 }))
+      .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+  };
+  const featureCounts = new Map();
+  const featureByRows = new Map();
+  rows.forEach((row) => {
+    String(row.selected_features || '').split(',').map((item) => item.trim()).filter(Boolean).forEach((feature) => {
+      featureCounts.set(feature, (featureCounts.get(feature) || 0) + 1);
+      if (!featureByRows.has(row.id)) featureByRows.set(row.id, []);
+      featureByRows.get(row.id).push(feature);
+    });
+  });
+  const features = [...featureCounts.entries()]
+    .map(([key, count]) => ({ key, label: FEATURE_LABELS[key] || key, count, share: total ? Math.round((count / total) * 1000) / 10 : 0 }))
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+  const attributed = rows.filter((row) => row.utm_source || row.utm_campaign || row.agent_id || row.prompt_id || row.creative_id).length;
+  const promptGroups = new Map();
+  rows.forEach((row) => {
+    const prompt = row.prompt_id || row.utm_content;
+    const agent = row.agent_id || '未标记 agent';
+    if (!prompt && !row.agent_id) return;
+    const creative = row.creative_id || '未标记素材';
+    const key = `${agent}\u0000${prompt || '未标记 prompt'}\u0000${creative}\u0000${row.utm_campaign || ''}`;
+    if (!promptGroups.has(key)) promptGroups.set(key, { agent, prompt: prompt || '未标记 prompt', creative, campaign: row.utm_campaign || '未标记活动', count: 0, features: new Map() });
+    const group = promptGroups.get(key);
+    group.count += 1;
+    (featureByRows.get(row.id) || []).forEach((feature) => group.features.set(feature, (group.features.get(feature) || 0) + 1));
+  });
+  const prompts = [...promptGroups.values()].map((group) => {
+    const top = [...group.features.entries()].sort((a, b) => b[1] - a[1])[0];
+    return {
+      agent: group.agent,
+      prompt: group.prompt,
+      creative: group.creative,
+      campaign: group.campaign,
+      count: group.count,
+      share: total ? Math.round((group.count / total) * 1000) / 10 : 0,
+      topFeature: top ? FEATURE_LABELS[top[0]] || top[0] : '暂无偏好信号',
+    };
+  }).sort((a, b) => b.count - a.count || a.prompt.localeCompare(b.prompt));
+  return {
+    range: safeDays,
+    total,
+    attributed,
+    coverage: total ? Math.round((attributed / total) * 1000) / 10 : 0,
+    topSource: countBy((row) => row.utm_source)[0] || null,
+    topFeature: features[0] || null,
+    sources: countBy((row) => row.utm_source || (row.referrer ? 'Referral' : 'Direct / Unknown')),
+    campaigns: countBy((row) => row.utm_campaign),
+    features,
+    prompts,
+  };
+}
+
 function csvCell(value) {
   return `"${String(value ?? '').replace(/"/g, '""')}"`;
 }
 
 function leadsCsv(rows) {
-  const headers = ['ID', '姓名', '邮箱', '联系方式', '关注方向', '关注亮点', '留言', '语言', '来源页', '提交时间'];
+  const headers = ['ID', '姓名', '邮箱', '性别', '年龄段', '关注亮点', '留言', '语言', '地理位置', '来源页', 'UTM 来源', 'UTM 媒介', 'UTM 活动', 'UTM 内容', 'Agent', 'Prompt', '素材', '首次落地页', 'Referrer', '提交时间'];
   const lines = [
     headers,
     ...rows.map((lead) => [
       lead.id,
       lead.name,
       lead.email,
-      lead.contact,
-      lead.intentLabel,
+      lead.genderLabel,
+      lead.ageRangeLabel,
       lead.selectedFeatures,
       lead.message,
       lead.lang,
+      lead.geoLabel,
       lead.pagePath,
+      lead.utmSource,
+      lead.utmMedium,
+      lead.utmCampaign,
+      lead.utmContent,
+      lead.agentId,
+      lead.promptId,
+      lead.creativeId,
+      lead.landingPath,
+      lead.referrer,
       lead.createdAt,
     ]),
   ];
@@ -527,15 +777,29 @@ async function handlePublic(req, res) {
       const info = insertLeadStmt.run(
         value.name,
         value.email,
-        value.contact,
         value.intent,
+        value.gender,
+        value.ageRange,
         value.selectedFeatures,
         value.message,
         value.lang,
         value.pagePath,
+        value.attribution.utmSource,
+        value.attribution.utmMedium,
+        value.attribution.utmCampaign,
+        value.attribution.utmContent,
+        value.attribution.utmTerm,
+        value.attribution.agentId,
+        value.attribution.promptId,
+        value.attribution.creativeId,
+        value.attribution.landingPath,
+        value.attribution.referrer,
         clientIp(req),
         clean(req.headers['user-agent'], 400),
       );
+
+      // IP 粗略定位 —— 非阻塞，不影响给用户的响应
+      fillLeadGeoAsync(info.lastInsertRowid, clientIp(req));
 
       // 服务端 Lead 事件（Meta CAPI）——非阻塞、不影响给用户的响应
       sendCapiLead({
@@ -591,9 +855,13 @@ async function handleAdmin(req, res) {
 
     if (req.method === 'GET' && url.pathname === '/api/stats') return sendJson(res, 200, getStats());
 
+    if (req.method === 'GET' && url.pathname === '/api/attribution') {
+      return sendJson(res, 200, getAttribution(url.searchParams.get('days') || '30'));
+    }
+
     if (req.method === 'GET' && url.pathname === '/api/leads') {
       const all = url.searchParams.get('all') === '1';
-      return sendJson(res, 200, queryLeads({
+      return sendJson(res, 200, await queryLeads({
         all,
         page: url.searchParams.get('page'),
         size: url.searchParams.get('size'),
@@ -601,7 +869,7 @@ async function handleAdmin(req, res) {
     }
 
     if (req.method === 'GET' && url.pathname === '/api/leads/export.csv') {
-      const rows = queryLeads({ all: true }).items;
+      const rows = (await queryLeads({ all: true })).items;
       const body = leadsCsv(rows);
       res.writeHead(200, {
         'Content-Type': 'text/csv; charset=utf-8',
