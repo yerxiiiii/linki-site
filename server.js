@@ -557,11 +557,212 @@ const FEATURE_LABELS = {
   'Magnetic character interface': '磁吸角色切换',
 };
 
-function getAttribution(days = 30) {
+const FEATURE_SHORT_LABELS = {
+  'Season-synced screen': '季节/时间同步',
+  'Camera-free presence sensing': '无摄像头感知',
+  'Responsive touch interaction': '触碰互动',
+  'Naked-eye 3D display': '裸眼 3D',
+  'Non-visual environmental sensing': '非视觉环境感知',
+  'Magnetic character interface': '磁吸角色',
+};
+
+const FEATURE_KEYS = Object.keys(FEATURE_LABELS);
+const FEATURE_TOTAL = FEATURE_KEYS.length;
+
+function parseFeatures(raw) {
+  return String(raw || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function shareOf(count, total) {
+  return total ? Math.round((count / total) * 1000) / 10 : 0;
+}
+
+function queryLeadsByRange(days = 30) {
   const safeDays = [7, 30, 90].includes(Number(days)) ? Number(days) : days === 'all' ? 'all' : 30;
   const rows = safeDays === 'all'
     ? db.prepare('SELECT * FROM leads ORDER BY id DESC').all()
     : db.prepare("SELECT * FROM leads WHERE created_at >= datetime('now', ?) ORDER BY id DESC").all(`-${safeDays} days`);
+  return { safeDays, rows };
+}
+
+function pickCountLabel(count) {
+  if (count === 0) return '未选';
+  if (count >= FEATURE_TOTAL) return `全选 ${FEATURE_TOTAL} 项`;
+  return `选 ${count} 项`;
+}
+
+function buildFeatureCohort(parsedRows) {
+  const n = parsedRows.length;
+  const featureCounts = new Map(FEATURE_KEYS.map((key) => [key, 0]));
+  const pickCountMap = new Map();
+  let pickSum = 0;
+
+  parsedRows.forEach(({ features }) => {
+    pickCountMap.set(features.length, (pickCountMap.get(features.length) || 0) + 1);
+    pickSum += features.length;
+    features.forEach((feature) => {
+      if (featureCounts.has(feature)) featureCounts.set(feature, featureCounts.get(feature) + 1);
+      else featureCounts.set(feature, (featureCounts.get(feature) || 0) + 1);
+    });
+  });
+
+  const official = FEATURE_KEYS.map((key) => ({
+    key,
+    label: FEATURE_LABELS[key] || key,
+    shortLabel: FEATURE_SHORT_LABELS[key] || FEATURE_LABELS[key] || key,
+    count: featureCounts.get(key) || 0,
+    share: shareOf(featureCounts.get(key) || 0, n),
+  })).sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+
+  const extras = [...featureCounts.entries()]
+    .filter(([key, count]) => !FEATURE_KEYS.includes(key) && count > 0)
+    .map(([key, count]) => ({
+      key,
+      label: FEATURE_LABELS[key] || key,
+      shortLabel: FEATURE_SHORT_LABELS[key] || FEATURE_LABELS[key] || key,
+      count,
+      share: shareOf(count, n),
+    }))
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+
+  const features = [...official, ...extras];
+
+  const pickCounts = [...pickCountMap.entries()]
+    .map(([count, people]) => ({
+      count,
+      people,
+      share: shareOf(people, n),
+      label: pickCountLabel(count),
+    }))
+    .sort((a, b) => {
+      if (a.count >= FEATURE_TOTAL && b.count < FEATURE_TOTAL) return -1;
+      if (b.count >= FEATURE_TOTAL && a.count < FEATURE_TOTAL) return 1;
+      if (a.count === 0) return 1;
+      if (b.count === 0) return -1;
+      return b.people - a.people || a.count - b.count;
+    });
+
+  return {
+    n,
+    avgPicks: n ? Math.round((pickSum / n) * 10) / 10 : 0,
+    features,
+    pickCounts,
+  };
+}
+
+function buildCohortInsight(mode, allCohort, excludeCohort, selectAllCount) {
+  if (!allCohort.n) return '当前时间范围内还没有线索。';
+  if (mode === 'all') {
+    const top = allCohort.features.slice(0, 2).map((item) => item.shortLabel).join(' / ');
+    const full = allCohort.pickCounts.find((item) => item.count >= FEATURE_TOTAL);
+    return `全部 ${allCohort.n} 人：全选 ${selectAllCount} 人（${shareOf(selectAllCount, allCohort.n)}%），平均勾选 ${allCohort.avgPicks}；前二偏好 ${top || '暂无'}。`;
+  }
+  const top = excludeCohort.features.slice(0, 2).map((item) => item.shortLabel).join(' / ');
+  const bottom = excludeCohort.features.slice(2).filter((item) => item.count > 0);
+  const dropNote = bottom.length
+    ? `后 ${bottom.length} 项明显掉档`
+    : '其余亮点暂无足够样本';
+  return `去掉 ${selectAllCount} 人全选后：前二仍是 ${top || '暂无'}；${dropNote}。`;
+}
+
+function getUserAnalysis(days = 30) {
+  const { safeDays, rows } = queryLeadsByRange(days);
+  const parsedRows = rows.map((row) => {
+    const features = parseFeatures(row.selected_features);
+    return {
+      row,
+      features,
+      isSelectAll: FEATURE_KEYS.every((key) => features.includes(key)) || features.length >= FEATURE_TOTAL,
+    };
+  });
+
+  const allRows = parsedRows;
+  const excludeRows = parsedRows.filter((item) => !item.isSelectAll);
+  const selectAllCount = parsedRows.filter((item) => item.isSelectAll).length;
+
+  const allCohort = buildFeatureCohort(allRows);
+  const excludeCohort = buildFeatureCohort(excludeRows);
+
+  const singleByFeature = new Map();
+  const singleLeads = [];
+  let withFeatures = 0;
+  let noPick = 0;
+
+  parsedRows.forEach(({ row, features }) => {
+    if (!features.length) {
+      noPick += 1;
+      return;
+    }
+    withFeatures += 1;
+    if (features.length === 1) {
+      const feature = features[0];
+      singleByFeature.set(feature, (singleByFeature.get(feature) || 0) + 1);
+      singleLeads.push({
+        id: row.id,
+        name: row.name,
+        email: row.email,
+        lang: row.lang,
+        genderLabel: GENDER_LABEL[row.gender] || '',
+        ageRangeLabel: AGE_RANGE_LABEL[row.age_range] || '',
+        geoLabel: formatGeoLabel({
+          country: row.geo_country,
+          region: row.geo_region,
+          city: row.geo_city,
+        }),
+        feature,
+        featureLabel: FEATURE_LABELS[feature] || feature,
+        featureShortLabel: FEATURE_SHORT_LABELS[feature] || FEATURE_LABELS[feature] || feature,
+        createdAt: row.created_at,
+      });
+    }
+  });
+
+  const singlePick = singleLeads.length;
+  const singleFeatures = [...singleByFeature.entries()]
+    .map(([key, count]) => ({
+      key,
+      label: FEATURE_LABELS[key] || key,
+      shortLabel: FEATURE_SHORT_LABELS[key] || FEATURE_LABELS[key] || key,
+      count,
+      share: shareOf(count, singlePick),
+    }))
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+
+  const cohorts = {
+    all: {
+      ...allCohort,
+      title: `全部用户偏好 (n=${allCohort.n})`,
+      insight: buildCohortInsight('all', allCohort, excludeCohort, selectAllCount),
+    },
+    excludeAll: {
+      ...excludeCohort,
+      title: `未全选用户偏好 (n=${excludeCohort.n})`,
+      insight: buildCohortInsight('excludeAll', allCohort, excludeCohort, selectAllCount),
+    },
+  };
+
+  return {
+    range: safeDays,
+    total: allCohort.n,
+    featureTotal: FEATURE_TOTAL,
+    withFeatures,
+    noPick,
+    selectAllCount,
+    selectAllShare: shareOf(selectAllCount, allCohort.n),
+    singlePick,
+    singleShare: shareOf(singlePick, allCohort.n),
+    topSingleFeature: singleFeatures[0] || null,
+    singleFeatures,
+    singleLeads,
+    cohorts,
+  };
+}
+
+function getAttribution(days = 30) {
+  const { safeDays, rows } = queryLeadsByRange(days);
   const total = rows.length;
   const countBy = (getter) => {
     const counts = new Map();
@@ -570,20 +771,20 @@ function getAttribution(days = 30) {
       if (value) counts.set(value, (counts.get(value) || 0) + 1);
     });
     return [...counts.entries()]
-      .map(([label, count]) => ({ label, count, share: total ? Math.round((count / total) * 1000) / 10 : 0 }))
+      .map(([label, count]) => ({ label, count, share: shareOf(count, total) }))
       .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
   };
   const featureCounts = new Map();
   const featureByRows = new Map();
   rows.forEach((row) => {
-    String(row.selected_features || '').split(',').map((item) => item.trim()).filter(Boolean).forEach((feature) => {
+    parseFeatures(row.selected_features).forEach((feature) => {
       featureCounts.set(feature, (featureCounts.get(feature) || 0) + 1);
       if (!featureByRows.has(row.id)) featureByRows.set(row.id, []);
       featureByRows.get(row.id).push(feature);
     });
   });
   const features = [...featureCounts.entries()]
-    .map(([key, count]) => ({ key, label: FEATURE_LABELS[key] || key, count, share: total ? Math.round((count / total) * 1000) / 10 : 0 }))
+    .map(([key, count]) => ({ key, label: FEATURE_LABELS[key] || key, count, share: shareOf(count, total) }))
     .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
   const attributed = rows.filter((row) => row.utm_source || row.utm_campaign || row.agent_id || row.prompt_id || row.creative_id).length;
   const promptGroups = new Map();
@@ -606,7 +807,7 @@ function getAttribution(days = 30) {
       creative: group.creative,
       campaign: group.campaign,
       count: group.count,
-      share: total ? Math.round((group.count / total) * 1000) / 10 : 0,
+      share: shareOf(group.count, total),
       topFeature: top ? FEATURE_LABELS[top[0]] || top[0] : '暂无偏好信号',
     };
   }).sort((a, b) => b.count - a.count || a.prompt.localeCompare(b.prompt));
@@ -614,7 +815,7 @@ function getAttribution(days = 30) {
     range: safeDays,
     total,
     attributed,
-    coverage: total ? Math.round((attributed / total) * 1000) / 10 : 0,
+    coverage: shareOf(attributed, total),
     topSource: countBy((row) => row.utm_source)[0] || null,
     topFeature: features[0] || null,
     sources: countBy((row) => row.utm_source || (row.referrer ? 'Referral' : 'Direct / Unknown')),
@@ -857,6 +1058,10 @@ async function handleAdmin(req, res) {
 
     if (req.method === 'GET' && url.pathname === '/api/attribution') {
       return sendJson(res, 200, getAttribution(url.searchParams.get('days') || '30'));
+    }
+
+    if (req.method === 'GET' && url.pathname === '/api/users/analysis') {
+      return sendJson(res, 200, getUserAnalysis(url.searchParams.get('days') || 'all'));
     }
 
     if (req.method === 'GET' && url.pathname === '/api/leads') {

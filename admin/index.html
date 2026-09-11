@@ -317,6 +317,135 @@
       .operator-note span { color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .08em; }
       .operator-note p { margin: 6px 0 0; font-size: 13px; line-height: 1.55; }
       .empty-report { padding: 34px 18px; color: var(--muted); text-align: center; }
+      .filter-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+      .filter-chip {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--panel);
+        color: var(--ink);
+        padding: 6px 12px;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .filter-chip:hover { border-color: var(--accent); color: var(--accent-dark); }
+      .filter-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+      .analysis-charts {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+        gap: 18px;
+        margin-bottom: 18px;
+      }
+      .chart-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 18px 20px 16px;
+        min-width: 0;
+      }
+      .chart-card-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+      .chart-card h2 { margin: 0; font-size: 17px; }
+      .chart-insight {
+        margin: 0 0 16px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .bar-chart { display: grid; gap: 11px; }
+      .bar-row {
+        display: grid;
+        grid-template-columns: minmax(96px, 118px) minmax(0, 1fr) 36px;
+        align-items: center;
+        gap: 10px;
+      }
+      .bar-label { font-size: 13px; font-weight: 700; line-height: 1.25; }
+      .bar-track {
+        height: 18px;
+        border-radius: 4px;
+        background: oklch(94% 0.01 90);
+        overflow: hidden;
+      }
+      .bar-fill {
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #5f8f78, #3f6f5a);
+        min-width: 2px;
+      }
+      .bar-value {
+        text-align: right;
+        font-size: 13px;
+        font-weight: 750;
+        font-variant-numeric: tabular-nums;
+      }
+      .single-top {
+        margin: 16px 0 0;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+        color: var(--ink);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .single-top strong { font-weight: 800; }
+      .donut-wrap {
+        display: grid;
+        grid-template-columns: 180px minmax(0, 1fr);
+        gap: 16px;
+        align-items: center;
+      }
+      .donut-svg { width: 180px; height: 180px; }
+      .donut-center-label {
+        font-size: 13px;
+        fill: var(--muted);
+        font-weight: 700;
+      }
+      .donut-center-value {
+        font-size: 28px;
+        fill: var(--ink);
+        font-weight: 800;
+      }
+      .donut-legend { display: grid; gap: 8px; }
+      .donut-legend-item {
+        display: grid;
+        grid-template-columns: 10px minmax(0, 1fr) auto;
+        gap: 8px;
+        align-items: center;
+        font-size: 12px;
+      }
+      .donut-swatch { width: 10px; height: 10px; border-radius: 999px; }
+      .donut-legend-item span { color: var(--ink); }
+      .donut-legend-item em {
+        color: var(--muted);
+        font-style: normal;
+        font-variant-numeric: tabular-nums;
+      }
+      .donut-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+      }
+      .donut-pill {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--panel-soft);
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: 750;
+      }
+      .donut-foot {
+        margin: 12px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+      }
+      .mode-toggle { display: inline-flex; gap: 6px; flex-wrap: wrap; }
 
       @media (max-width: 860px) {
         .layout { grid-template-columns: 1fr; }
@@ -343,6 +472,9 @@
         .summary-metric:nth-child(2) { border-right: 0; }
         .summary-metric:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
         .attribution-grid { grid-template-columns: 1fr; }
+        .analysis-charts { grid-template-columns: 1fr; }
+        .donut-wrap { grid-template-columns: 1fr; justify-items: center; }
+        .donut-legend { width: 100%; }
       }
 
       @media (max-width: 540px) {
@@ -425,9 +557,61 @@
             </section>
           </section>
 
-          <section id="view-users" class="placeholder-view" hidden>
-            <h1>用户分析</h1>
-            <p>即将上线：按来源、语言与关注亮点查看用户分布。</p>
+          <section id="view-users" hidden>
+            <div class="page-head">
+              <div>
+                <h1>用户分析</h1>
+                <p>用条形图看亮点偏好，用环形图看勾选数量；可在含全选 / 排除全选之间切换。</p>
+              </div>
+              <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                <div class="mode-toggle" id="users-mode-toggle" role="group" aria-label="全选筛选">
+                  <button class="filter-chip active" type="button" data-mode="all">含全选</button>
+                  <button class="filter-chip" type="button" data-mode="excludeAll">排除全选</button>
+                </div>
+                <select class="range-control" id="users-range" aria-label="用户分析时间范围">
+                  <option value="7">近 7 天</option>
+                  <option value="30">近 30 天</option>
+                  <option value="90">近 90 天</option>
+                  <option value="all" selected>全部</option>
+                </select>
+              </div>
+            </div>
+
+            <section class="attribution-summary" aria-label="用户分析概览">
+              <div class="summary-metric"><span>线索总数</span><strong id="users-total">0</strong><small id="users-total-detail">等待数据</small></div>
+              <div class="summary-metric"><span>全选人数</span><strong id="users-selectall">0</strong><small id="users-selectall-detail">选齐全部亮点</small></div>
+              <div class="summary-metric"><span>只选一条</span><strong id="users-single">0</strong><small id="users-single-detail">重点关注人群</small></div>
+              <div class="summary-metric"><span>单选首要亮点</span><strong id="users-single-top">暂无</strong><small id="users-single-top-detail">等待单选线索</small></div>
+            </section>
+
+            <div class="analysis-charts">
+              <section class="chart-card">
+                <div class="chart-card-head">
+                  <h2 id="bar-title">用户偏好</h2>
+                </div>
+                <p class="chart-insight" id="bar-insight">加载中...</p>
+                <div class="bar-chart" id="bar-chart"><div class="loading">加载中...</div></div>
+                <p class="single-top" id="single-top-line">单选 TOP: -</p>
+              </section>
+              <section class="chart-card">
+                <div class="chart-card-head">
+                  <h2>勾选数量分布</h2>
+                </div>
+                <div id="donut-chart"><div class="loading">加载中...</div></div>
+                <p class="donut-foot" id="donut-foot"></p>
+              </section>
+            </div>
+
+            <section class="report-section">
+              <div class="report-head">
+                <div>
+                  <h2>只选一条的人</h2>
+                  <p class="report-kicker">这些人最干净地表达了偏好；可按亮点筛选名单。</p>
+                </div>
+              </div>
+              <div id="single-filters" class="filter-chips"></div>
+              <div class="panel table-wrap" id="single-report"><div class="loading">加载中...</div></div>
+            </section>
           </section>
           <section id="view-mail" class="placeholder-view" hidden>
             <h1>邮件</h1>
@@ -503,6 +687,10 @@
       let currentPage = 1;
       let totalCount = 0;
       let attributionLoaded = false;
+      let usersLoaded = false;
+      let usersAnalysisData = null;
+      let singleFeatureFilter = "all";
+      let usersCohortMode = "all";
 
       const tableWrap = document.getElementById("table-wrap");
       const pager = document.getElementById("pager");
@@ -513,6 +701,9 @@
       const logoutBtn = document.getElementById("logout-btn");
       const crumbView = document.getElementById("crumb-view");
       const attributionRange = document.getElementById("attribution-range");
+      const usersRange = document.getElementById("users-range");
+      const usersModeToggle = document.getElementById("users-mode-toggle");
+      const DONUT_COLORS = ["#5f8f78", "#7ea8c4", "#4d5f8f", "#d08a4c", "#8b6b4c", "#d4b45a", "#c97b8a"];
       const FEATURE_LABELS = {
         "Season-synced screen": "四季与天气同步",
         "Camera-free presence sensing": "无摄像头存在感知",
@@ -546,6 +737,7 @@
         if (crumbView) crumbView.textContent = VIEW_LABELS[name];
         if (name === "feedback") load(currentPage);
         if (name === "ads" && !attributionLoaded) loadAttribution();
+        if (name === "users" && !usersLoaded) loadUsersAnalysis();
       }
 
       document.querySelectorAll(".nav-item[data-view]").forEach((item) => {
@@ -757,6 +949,217 @@
         }
       }
 
+      function renderSingleLeads(data) {
+        const report = document.getElementById("single-report");
+        const filters = document.getElementById("single-filters");
+        const leads = (data.singleLeads || []).filter((item) =>
+          singleFeatureFilter === "all" ? true : item.feature === singleFeatureFilter);
+
+        filters.innerHTML = [
+          `<button class="filter-chip ${singleFeatureFilter === "all" ? "active" : ""}" type="button" data-feature="all">全部 ${data.singlePick || 0}</button>`,
+          ...(data.singleFeatures || []).map((item) =>
+            `<button class="filter-chip ${singleFeatureFilter === item.key ? "active" : ""}" type="button" data-feature="${esc(item.key)}">${esc(item.shortLabel || item.label)} ${item.count}</button>`),
+        ].join("");
+
+        filters.querySelectorAll(".filter-chip").forEach((button) => {
+          button.addEventListener("click", () => {
+            singleFeatureFilter = button.dataset.feature || "all";
+            renderSingleLeads(data);
+          });
+        });
+
+        if (!leads.length) {
+          report.innerHTML = '<div class="empty-report">当前筛选下没有只选一条的用户。</div>';
+          return;
+        }
+
+        report.innerHTML = `
+          <table class="report-table single-table" style="min-width:720px;table-layout:auto">
+            <thead>
+              <tr>
+                <th>提交时间</th>
+                <th>姓名</th>
+                <th>邮箱</th>
+                <th>唯一亮点</th>
+                <th>地区</th>
+                <th>语言</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${leads.map((item) => `
+                <tr>
+                  <td class="muted">${esc(item.createdAt)}</td>
+                  <td>${esc(item.name)}</td>
+                  <td>${esc(item.email)}</td>
+                  <td style="font-weight:750;color:var(--accent-dark)">${esc(item.featureLabel)}</td>
+                  <td>${item.geoLabel ? esc(item.geoLabel) : '<span class="muted">-</span>'}</td>
+                  <td>${esc(item.lang || "-")}</td>
+                </tr>`).join("")}
+            </tbody>
+          </table>`;
+      }
+
+      function renderBarChart(cohort) {
+        const node = document.getElementById("bar-chart");
+        document.getElementById("bar-title").textContent = cohort.title;
+        document.getElementById("bar-insight").textContent = cohort.insight;
+        if (!cohort.features.length || !cohort.n) {
+          node.innerHTML = '<div class="empty-report">当前视图没有可展示的偏好数据。</div>';
+          return;
+        }
+        const maxCount = Math.max(1, ...cohort.features.map((item) => item.count));
+        node.innerHTML = cohort.features.map((item) => `
+          <div class="bar-row">
+            <div class="bar-label">${esc(item.shortLabel || item.label)}</div>
+            <div class="bar-track"><div class="bar-fill" style="width:${Math.max(2, (item.count / maxCount) * 100)}%"></div></div>
+            <div class="bar-value">${item.count}</div>
+          </div>`).join("");
+      }
+
+      function donutPaths(items) {
+        const total = items.reduce((sum, item) => sum + item.people, 0);
+        if (!total) return "";
+        const cx = 90;
+        const cy = 90;
+        const radius = 68;
+        const inner = 42;
+        let angle = -Math.PI / 2;
+        return items.map((item, index) => {
+          const sweep = (item.people / total) * Math.PI * 2;
+          const start = angle;
+          const end = angle + sweep;
+          angle = end;
+          if (item.people <= 0) return "";
+          const large = sweep > Math.PI ? 1 : 0;
+          const x1 = cx + radius * Math.cos(start);
+          const y1 = cy + radius * Math.sin(start);
+          const x2 = cx + radius * Math.cos(end);
+          const y2 = cy + radius * Math.sin(end);
+          const ix1 = cx + inner * Math.cos(end);
+          const iy1 = cy + inner * Math.sin(end);
+          const ix2 = cx + inner * Math.cos(start);
+          const iy2 = cy + inner * Math.sin(start);
+          const color = DONUT_COLORS[index % DONUT_COLORS.length];
+          if (item.people === total) {
+            return `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="${color}"></circle>
+              <circle cx="${cx}" cy="${cy}" r="${inner}" fill="#fffaf2"></circle>`;
+          }
+          return `<path d="M ${x1} ${y1} A ${radius} ${radius} 0 ${large} 1 ${x2} ${y2} L ${ix1} ${iy1} A ${inner} ${inner} 0 ${large} 0 ${ix2} ${iy2} Z" fill="${color}"></path>`;
+        }).join("");
+      }
+
+      function renderDonutChart(cohort, data) {
+        const node = document.getElementById("donut-chart");
+        const foot = document.getElementById("donut-foot");
+        const items = (cohort.pickCounts || []).filter((item) => item.people > 0);
+        if (!cohort.n || !items.length) {
+          node.innerHTML = '<div class="empty-report">当前视图没有勾选分布数据。</div>';
+          foot.textContent = "";
+          return;
+        }
+
+        const pills = items.slice(0, 3).map((item) =>
+          `<span class="donut-pill">${esc(item.label)} ${item.share}%</span>`).join("");
+
+        node.innerHTML = `
+          <div class="donut-wrap">
+            <svg class="donut-svg" viewBox="0 0 180 180" role="img" aria-label="勾选数量分布">
+              ${donutPaths(items)}
+              <text class="donut-center-value" x="90" y="88" text-anchor="middle">${cohort.n}</text>
+              <text class="donut-center-label" x="90" y="108" text-anchor="middle">Total</text>
+            </svg>
+            <div>
+              <div class="donut-legend">
+                ${items.map((item, index) => `
+                  <div class="donut-legend-item">
+                    <span class="donut-swatch" style="background:${DONUT_COLORS[index % DONUT_COLORS.length]}"></span>
+                    <span>${esc(item.label)}</span>
+                    <em>${item.share}%</em>
+                  </div>`).join("")}
+              </div>
+              <div class="donut-pills">${pills}</div>
+            </div>
+          </div>`;
+
+        const allCohort = data.cohorts.all;
+        const modeLabel = usersCohortMode === "excludeAll" ? "排除全选后" : "当前视图";
+        foot.textContent = `${modeLabel}平均勾选 ${cohort.avgPicks}；全选 ${data.selectAllCount || 0} 人（${data.selectAllShare || 0}%）。`;
+      }
+
+      function renderSingleTopLine(data) {
+        const node = document.getElementById("single-top-line");
+        if (!(data.singleFeatures || []).length) {
+          node.textContent = "单选 TOP: 暂无只选一条的用户";
+          return;
+        }
+        node.innerHTML = `<strong>单选 TOP:</strong> ${(data.singleFeatures || [])
+          .map((item) => `${esc(item.shortLabel || item.label)} ${item.count}`)
+          .join(" · ")}`;
+      }
+
+      function renderUsersCharts(data) {
+        const cohort = data.cohorts?.[usersCohortMode] || data.cohorts?.all;
+        if (!cohort) return;
+        renderBarChart(cohort);
+        renderDonutChart(cohort, data);
+        renderSingleTopLine(data);
+      }
+
+      function syncUsersModeToggle() {
+        usersModeToggle.querySelectorAll(".filter-chip").forEach((button) => {
+          button.classList.toggle("active", button.dataset.mode === usersCohortMode);
+        });
+      }
+
+      function renderUsersAnalysis(data) {
+        const topSingle = data.topSingleFeature;
+        document.getElementById("users-total").textContent = data.total || 0;
+        document.getElementById("users-total-detail").textContent = `${data.withFeatures || 0} 人选了亮点`;
+        document.getElementById("users-selectall").textContent = data.selectAllCount || 0;
+        document.getElementById("users-selectall-detail").textContent = data.total
+          ? `占全部线索 ${data.selectAllShare || 0}%`
+          : "选齐全部亮点";
+        document.getElementById("users-single").textContent = data.singlePick || 0;
+        document.getElementById("users-single-detail").textContent = data.total
+          ? `占全部线索 ${data.singleShare || 0}%`
+          : "重点关注人群";
+        document.getElementById("users-single-top").textContent = topSingle
+          ? (topSingle.shortLabel || topSingle.label)
+          : "暂无";
+        document.getElementById("users-single-top-detail").textContent = topSingle
+          ? `${topSingle.count} 人只选了它 · ${topSingle.share}%`
+          : "等待单选线索";
+
+        syncUsersModeToggle();
+        renderUsersCharts(data);
+        renderSingleLeads(data);
+      }
+
+      async function loadUsersAnalysis() {
+        const nodes = [
+          document.getElementById("bar-chart"),
+          document.getElementById("donut-chart"),
+          document.getElementById("single-report"),
+        ];
+        nodes.forEach((node) => { node.innerHTML = '<div class="loading">加载中...</div>'; });
+        document.getElementById("single-filters").innerHTML = "";
+        document.getElementById("bar-insight").textContent = "加载中...";
+        document.getElementById("single-top-line").textContent = "单选 TOP: -";
+        try {
+          const data = await apiGet(`/api/users/analysis?days=${encodeURIComponent(usersRange.value)}`);
+          usersAnalysisData = data;
+          if (singleFeatureFilter !== "all" && !(data.singleFeatures || []).some((item) => item.key === singleFeatureFilter)) {
+            singleFeatureFilter = "all";
+          }
+          renderUsersAnalysis(data);
+          usersLoaded = true;
+        } catch (error) {
+          if (error.message !== "unauthorized") {
+            nodes.forEach((node) => { node.innerHTML = '<div class="empty-report">用户分析加载失败，请稍后重试。</div>'; });
+          }
+        }
+      }
+
       async function load(page = currentPage) {
         selectedIds.clear();
         updateDeleteState();
@@ -813,6 +1216,18 @@
       attributionRange.addEventListener("change", () => {
         attributionLoaded = false;
         loadAttribution();
+      });
+      usersRange.addEventListener("change", () => {
+        usersLoaded = false;
+        singleFeatureFilter = "all";
+        loadUsersAnalysis();
+      });
+      usersModeToggle.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-mode]");
+        if (!button || !usersAnalysisData) return;
+        usersCohortMode = button.dataset.mode === "excludeAll" ? "excludeAll" : "all";
+        syncUsersModeToggle();
+        renderUsersCharts(usersAnalysisData);
       });
       deleteBtn.addEventListener("click", deleteSelected);
       document.getElementById("dialog-close").addEventListener("click", () => {
