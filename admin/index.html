@@ -111,19 +111,6 @@
         border-radius: 50%;
         background: var(--accent);
       }
-      .local-banner {
-        display: none;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 14px;
-        margin: 0 28px 14px;
-        border-radius: 10px;
-        background: #e9f2ed;
-        color: #3f6b55;
-        font-size: 13px;
-        font-weight: 700;
-      }
-      .local-banner.show { display: flex; }
       .content { padding: 28px; }
       .page-head { display: flex; justify-content: space-between; gap: 20px; align-items: end; margin-bottom: 22px; }
       h1 { margin: 0; font-size: clamp(24px, 3vw, 34px); line-height: 1.2; }
@@ -624,8 +611,6 @@
           </div>
         </header>
 
-        <div class="local-banner" id="local-banner">本地免登录模式 · 请勿用于生产环境</div>
-
         <div class="content">
           <section id="view-feedback">
             <div class="page-head">
@@ -854,10 +839,7 @@
         settings: "设置",
       };
 
-      let localOpen = false;
-
       function goLogin() {
-        if (localOpen) return;
         window.location.replace("/login");
       }
 
@@ -1450,10 +1432,6 @@
       });
 
       logoutBtn.addEventListener("click", async () => {
-        if (localOpen) {
-          window.location.href = "/local";
-          return;
-        }
         await fetch("/api/logout", { method: "POST", credentials: "same-origin" });
         goLogin();
       });
@@ -1462,11 +1440,6 @@
         try {
           const res = await fetch("/api/session", { credentials: "same-origin" });
           const data = await res.json();
-          localOpen = !!data.localOpen;
-          if (localOpen) {
-            document.getElementById("local-banner").classList.add("show");
-            logoutBtn.textContent = "返回测试页";
-          }
           if (!data.authenticated) {
             goLogin();
             return;

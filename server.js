@@ -16,15 +16,13 @@ const RATE_WINDOW_MS = Number(process.env.RATE_LIMIT_WINDOW_MS) || 60_000;
 const RATE_MAX = Number(process.env.RATE_LIMIT_MAX) || 8;
 const BODY_LIMIT = 64 * 1024;
 const startedAt = Date.now();
-// 仅本地调试：ADMIN_PUBLIC=1 时后台免登录（禁止用于生产）
-const ADMIN_PUBLIC = process.env.ADMIN_PUBLIC === '1';
 
 const TRUST_PROXY = parseTrustProxy(process.env.TRUST_PROXY);
 
 // ---- 后台账号登录（独立登录页 + 内存 Session）----
 const ADMIN_USER = String(process.env.ADMIN_USER || '').trim();
 const ADMIN_PASSWORD = String(process.env.ADMIN_PASSWORD || '');
-if (!ADMIN_PUBLIC && (!ADMIN_USER || !ADMIN_PASSWORD)) {
+if (!ADMIN_USER || !ADMIN_PASSWORD) {
   console.error('缺少 ADMIN_USER / ADMIN_PASSWORD，后台拒绝启动。请在 .env 中配置。');
   process.exit(1);
 }
@@ -955,7 +953,7 @@ function serveStatic(res, baseDir, pathname) {
 }
 
 function assertAdminSession(req, res) {
-  if (ADMIN_PUBLIC || hasValidSession(req)) return true;
+  if (hasValidSession(req)) return true;
   sendError(res, 401, '未登录');
   return false;
 }
@@ -997,10 +995,7 @@ function handleLogout(req, res) {
 }
 
 function handleSession(req, res) {
-  return sendJson(res, 200, {
-    authenticated: ADMIN_PUBLIC || hasValidSession(req),
-    localOpen: ADMIN_PUBLIC,
-  });
+  return sendJson(res, 200, { authenticated: hasValidSession(req) });
 }
 
 async function handlePublic(req, res) {
@@ -1086,15 +1081,9 @@ async function handleAdmin(req, res) {
     if (req.method === 'GET' && url.pathname === '/api/session') return handleSession(req, res);
     if (req.method === 'POST' && url.pathname === '/api/logout') return handleLogout(req, res);
 
-    // 本地免登录测试入口
-    if ((req.method === 'GET' || req.method === 'HEAD') && (url.pathname === '/local' || url.pathname === '/local.html')) {
-      if (!ADMIN_PUBLIC) return sendText(res, 404, 'Not found');
-      return serveStatic(res, adminDir, '/local.html');
-    }
-
-    // 根路径：已登录进后台，未登录跳转登录页（ADMIN_PUBLIC 时直接进）
+    // 根路径：已登录进后台，未登录跳转登录页
     if ((req.method === 'GET' || req.method === 'HEAD') && (url.pathname === '/' || url.pathname === '/index.html')) {
-      if (!ADMIN_PUBLIC && !hasValidSession(req)) return redirect(res, '/login');
+      if (!hasValidSession(req)) return redirect(res, '/login');
       return serveStatic(res, adminDir, '/index.html');
     }
 
@@ -1160,12 +1149,7 @@ publicServer.listen(PORT, HOST, () => {
 
 adminServer.listen(ADMIN_PORT, HOST, () => {
   console.log(`内部看板：http://localhost:${ADMIN_PORT}`);
-  if (ADMIN_PUBLIC) {
-    console.log('⚠ 本地免登录已开启（ADMIN_PUBLIC=1）');
-    console.log(`  测试入口：http://localhost:${ADMIN_PORT}/local`);
-  } else {
-    console.log('后台鉴权：独立登录页 + 内存 Session（需 ADMIN_USER / ADMIN_PASSWORD）');
-  }
+  console.log('后台鉴权：独立登录页 + 内存 Session（需 ADMIN_USER / ADMIN_PASSWORD）');
 });
 
 function shutdown(signal) {
