@@ -16,13 +16,15 @@ const RATE_WINDOW_MS = Number(process.env.RATE_LIMIT_WINDOW_MS) || 60_000;
 const RATE_MAX = Number(process.env.RATE_LIMIT_MAX) || 8;
 const BODY_LIMIT = 64 * 1024;
 const startedAt = Date.now();
+// 仅本地调试：ADMIN_PUBLIC=1 时后台免登录（禁止用于生产）
+const ADMIN_PUBLIC = process.env.ADMIN_PUBLIC === '1';
 
 const TRUST_PROXY = parseTrustProxy(process.env.TRUST_PROXY);
 
 // ---- 后台账号登录（独立登录页 + 内存 Session）----
 const ADMIN_USER = String(process.env.ADMIN_USER || '').trim();
 const ADMIN_PASSWORD = String(process.env.ADMIN_PASSWORD || '');
-if (!ADMIN_USER || !ADMIN_PASSWORD) {
+if (!ADMIN_PUBLIC && (!ADMIN_USER || !ADMIN_PASSWORD)) {
   console.error('缺少 ADMIN_USER / ADMIN_PASSWORD，后台拒绝启动。请在 .env 中配置。');
   process.exit(1);
 }
@@ -504,23 +506,24 @@ function rowToLead(row, geo = null) {
   };
 }
 
-async function queryLeads({ page = 1, size = 20, all = false } = {}) {
+async function queryLeads({ page = 1, size = 20, all = false, withMessage = false } = {}) {
   const mapRows = async (rows) =>
     Promise.all(rows.map(async (row) => rowToLead(row, await resolveLeadGeo(row))));
+  const where = withMessage ? "WHERE TRIM(COALESCE(message, '')) != ''" : '';
 
   if (all) {
-    const rows = db.prepare('SELECT * FROM leads ORDER BY id DESC').all();
+    const rows = db.prepare(`SELECT * FROM leads ${where} ORDER BY id DESC`).all();
     return { items: await mapRows(rows) };
   }
 
   const safePage = Math.max(1, Number.parseInt(page, 10) || 1);
   const safeSize = Math.min(200, Math.max(1, Number.parseInt(size, 10) || 20));
-  const total = db.prepare('SELECT COUNT(*) AS n FROM leads').get().n;
+  const total = db.prepare(`SELECT COUNT(*) AS n FROM leads ${where}`).get().n;
   const rows = db
-    .prepare('SELECT * FROM leads ORDER BY id DESC LIMIT ? OFFSET ?')
+    .prepare(`SELECT * FROM leads ${where} ORDER BY id DESC LIMIT ? OFFSET ?`)
     .all(safeSize, (safePage - 1) * safeSize);
 
-  return { items: await mapRows(rows), total, page: safePage, size: safeSize };
+  return { items: await mapRows(rows), total, page: safePage, size: safeSize, withMessage: !!withMessage };
 }
 
 function deleteLeads(ids) {
@@ -537,15 +540,27 @@ function deleteLeads(ids) {
 }
 
 function getStats() {
-  return db
+  const summary = db
     .prepare(`
       SELECT
         COUNT(*) AS total,
-        COALESCE(SUM(CASE WHEN message != '' THEN 1 ELSE 0 END), 0) AS withMessage,
+        COALESCE(SUM(CASE WHEN TRIM(COALESCE(message, '')) != '' THEN 1 ELSE 0 END), 0) AS withMessage,
         COALESCE(SUM(CASE WHEN date(created_at) = date('now', 'localtime') THEN 1 ELSE 0 END), 0) AS today
       FROM leads
     `)
     .get();
+
+  const recentMessages = db
+    .prepare(`
+      SELECT id, name, email, message, created_at AS createdAt, lang
+      FROM leads
+      WHERE TRIM(COALESCE(message, '')) != ''
+      ORDER BY id DESC
+      LIMIT 30
+    `)
+    .all();
+
+  return { ...summary, recentMessages };
 }
 
 const FEATURE_LABELS = {
@@ -731,6 +746,25 @@ function getUserAnalysis(days = 30) {
     }))
     .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
 
+  const ageCountMap = new Map(AGE_RANGES.map((key) => [key, 0]));
+  let ageKnown = 0;
+  parsedRows.forEach(({ row }) => {
+    const key = row.age_range;
+    if (!AGE_RANGES.includes(key)) return;
+    ageCountMap.set(key, (ageCountMap.get(key) || 0) + 1);
+    ageKnown += 1;
+  });
+  const ageRanges = AGE_RANGES.map((key) => ({
+    key,
+    label: AGE_RANGE_LABEL[key] || key,
+    count: ageCountMap.get(key) || 0,
+    share: shareOf(ageCountMap.get(key) || 0, ageKnown || allCohort.n),
+  }));
+  const topAge = [...ageRanges].sort((a, b) => b.count - a.count || a.key.localeCompare(b.key))[0] || null;
+  const ageInsight = ageKnown
+    ? `已填写年龄 ${ageKnown} 人；最大群体是 ${topAge?.label || '暂无'}（${topAge?.count || 0} 人，${topAge?.share || 0}%）。`
+    : '当前时间范围内还没有年龄数据。';
+
   const cohorts = {
     all: {
       ...allCohort,
@@ -757,6 +791,10 @@ function getUserAnalysis(days = 30) {
     topSingleFeature: singleFeatures[0] || null,
     singleFeatures,
     singleLeads,
+    ageKnown,
+    ageRanges,
+    topAge,
+    ageInsight,
     cohorts,
   };
 }
@@ -917,7 +955,7 @@ function serveStatic(res, baseDir, pathname) {
 }
 
 function assertAdminSession(req, res) {
-  if (hasValidSession(req)) return true;
+  if (ADMIN_PUBLIC || hasValidSession(req)) return true;
   sendError(res, 401, '未登录');
   return false;
 }
@@ -959,7 +997,10 @@ function handleLogout(req, res) {
 }
 
 function handleSession(req, res) {
-  return sendJson(res, 200, { authenticated: hasValidSession(req) });
+  return sendJson(res, 200, {
+    authenticated: ADMIN_PUBLIC || hasValidSession(req),
+    localOpen: ADMIN_PUBLIC,
+  });
 }
 
 async function handlePublic(req, res) {
@@ -1045,9 +1086,15 @@ async function handleAdmin(req, res) {
     if (req.method === 'GET' && url.pathname === '/api/session') return handleSession(req, res);
     if (req.method === 'POST' && url.pathname === '/api/logout') return handleLogout(req, res);
 
-    // 根路径：已登录进后台，未登录跳转登录页
+    // 本地免登录测试入口
+    if ((req.method === 'GET' || req.method === 'HEAD') && (url.pathname === '/local' || url.pathname === '/local.html')) {
+      if (!ADMIN_PUBLIC) return sendText(res, 404, 'Not found');
+      return serveStatic(res, adminDir, '/local.html');
+    }
+
+    // 根路径：已登录进后台，未登录跳转登录页（ADMIN_PUBLIC 时直接进）
     if ((req.method === 'GET' || req.method === 'HEAD') && (url.pathname === '/' || url.pathname === '/index.html')) {
-      if (!hasValidSession(req)) return redirect(res, '/login');
+      if (!ADMIN_PUBLIC && !hasValidSession(req)) return redirect(res, '/login');
       return serveStatic(res, adminDir, '/index.html');
     }
 
@@ -1066,8 +1113,10 @@ async function handleAdmin(req, res) {
 
     if (req.method === 'GET' && url.pathname === '/api/leads') {
       const all = url.searchParams.get('all') === '1';
+      const withMessage = url.searchParams.get('withMessage') === '1';
       return sendJson(res, 200, await queryLeads({
         all,
+        withMessage,
         page: url.searchParams.get('page'),
         size: url.searchParams.get('size'),
       }));
@@ -1111,7 +1160,12 @@ publicServer.listen(PORT, HOST, () => {
 
 adminServer.listen(ADMIN_PORT, HOST, () => {
   console.log(`内部看板：http://localhost:${ADMIN_PORT}`);
-  console.log('后台鉴权：独立登录页 + 内存 Session（需 ADMIN_USER / ADMIN_PASSWORD）');
+  if (ADMIN_PUBLIC) {
+    console.log('⚠ 本地免登录已开启（ADMIN_PUBLIC=1）');
+    console.log(`  测试入口：http://localhost:${ADMIN_PORT}/local`);
+  } else {
+    console.log('后台鉴权：独立登录页 + 内存 Session（需 ADMIN_USER / ADMIN_PASSWORD）');
+  }
 });
 
 function shutdown(signal) {
