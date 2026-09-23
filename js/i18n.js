@@ -1,5 +1,5 @@
 /* =========================================================
-   Linki — 中英文切换（默认英文）
+   Linki — 中英日切换（默认英文）
    ========================================================= */
 (function () {
   'use strict';
@@ -209,8 +209,25 @@
     'footer.followHeading': { en: 'Follow us', zh: '关注我们' },
   };
 
+  // Japanese copy. Entries not listed here intentionally fall back to English
+  // so a newly added key never renders as undefined in the Japanese locale.
+  var JA = {
+    'nav.ariaLabel':'メインナビゲーション','nav.menuAria':'メニュー','nav.home':'ホーム','nav.features':'機能','nav.specs':'仕様','nav.contact':'お問い合わせ','lang.toggleAria':'英語に切り替え','lang.toggleLabel':'EN','nav.cta':'今すぐ参加',
+    'hero.eyebrow':'デスクの上の小さな命','hero.title':'触れるたび、ちょっとした驚き<br />毎日に、本当の寄り添いを','hero.sub':'カメラなしで、もっと安心。同じ季節を分かち合いながら、自然なかたちで毎日そばにいます。','hero.waitlist':'ウェイトリストに登録','hero.cta':'詳しく見る',
+    'intro.eyebrow':'システム機能','intro.title':'あなたの時間を奪わず<br />その瞬間を感じ取る','intro.copy':'環境センシング、シーン同期、瞬時の反応を、ひとつのデスクトップデバイスに。',
+    'highlight1.kicker':'01 / シーン同期','highlight1.title':'あなたと同じ季節を分かち合う','highlight1.desc':'時間、天気、季節の変化が、画面の中の世界に映し出されます。','highlight2.kicker':'02 / 安心感','highlight2.title':'机の上のパートナー。カメラではありません','highlight2.desc':'近くにいることや滞在を感じ取ります。カメラも画像の保存もありません。','highlight3.kicker':'03 / その瞬間の反応','highlight3.title':'同じ触れ方は、二度とない','highlight3.desc':'タッチは命令ではなく、軽やかな会話。いつも少しの未知を残します。','highlight4.kicker':'04 / マグネットモジュール',
+    'module.bodyTitle':'いつもの暮らしに、そっと溶け込む','module.bodyDesc':'仕事中も、ぼんやりしている時も、夜更かしの時も。Linkiは机の片隅に静かにいます。','modules.title':'いろいろなキャラクター、磁石で簡単チェンジ','modules.copy':'耳モジュールを替えると、画面のキャラクターも変身。カードをタップして前面へ。','modules.hint':'カードをタップして前面に表示','modules.panda':'パンダ','modules.pig':'こぶた','modules.shiba':'柴犬','modules.fox':'キツネ','modules.rabbit':'うさぎ','modules.hamster':'カンカン',
+    'specs.eyebrow':'クールな技術 · あたたかな核心','specs.title':'見えないところにある思いやり','spec1.title':'裸眼3Dディスプレイ','spec1.desc':'透明なボディの中に奥行きのある映像を表示。メガネは必要ありません。','spec2.title':'非視覚環境センシング','spec2.desc':'ミリ波レーダーと4マイクアレイで空間を感知。カメラは一切使いません。','spec3.title':'マグネット式キャラクターインターフェース','spec3.desc':'上部の磁気モジュールが、物理デザインとデジタルキャラクターをつなぎます。',
+    'newsletter.title':'Linkiの世界に参加しよう','newsletter.desc':'メールアドレスを残していただければ、製品情報や体験枠、コミュニティのお知らせをお届けします。','newsletter.cta':'今すぐ参加','form.name':'お名前','form.namePlaceholder':'お名前','form.email':'メールアドレス','form.selectPlaceholder':'選択してください','form.gender':'性別','form.genderFemale':'女性','form.genderMale':'男性','form.genderNonbinary':'ノンバイナリー / その他','form.genderPrivate':'回答しない','form.ageRange':'年齢層','form.ageUnder16':'16歳未満','form.age16To25':'16～25歳','form.age25To35':'25～35歳','form.age35To45':'35～45歳','form.ageOver45':'45歳以上','form.intent':'ご関心の内容','form.intentSelect':'選択してください','form.intentPreorder':'先行予約','form.intentExperience':'体験してみたい','form.intentPartnership':'販売店 / パートナーシップ','form.intentMedia':'メディアのお問い合わせ','form.intentOther':'その他','form.featuresLegend':'Linkiのどの機能に興味がありますか？','form.featuresHelper':'気になるものを選んでください。これからの開発に活かします。','form.feature.seasons':'季節と同期する画面','form.feature.presence':'カメラなしの存在検知','form.feature.touch':'反応するタッチインタラクション','form.feature.display3d':'裸眼3Dディスプレイ','form.feature.envSensing':'非視覚環境センシング','form.feature.magnetic':'マグネット式キャラクター','form.message':'メッセージ','form.messagePlaceholder':'ご質問、使い方のアイデア、コラボレーションのご提案','form.submit':'送信','form.loading':'送信中…',
+    'success.eyebrow':'席が確保されました','success.title':'登録完了です。<br />Linkiの未来を一緒につくりましょう。','success.desc':'ウェイトリストで最新情報をお届けします。コミュニティでは、発売前のアイデアや決定に参加できます。','success.fbLabel':'日常のストーリーを共有','success.fbTitle':'Facebookグループ','success.fbCta':'Facebookグループに参加','success.discordLabel':'開発の最新情報を追う','success.discordTitle':'Discordコミュニティ','success.discordCta':'Discordに参加','success.back':'ホームに戻る','footer.tagline':'サイバーライフのための、ともに暮らすペット。','footer.productHeading':'製品','footer.productLinki':'Linki','footer.productFeatures':'機能','footer.productSpecs':'仕様','footer.supportHeading':'サポート','footer.supportFaq':'よくある質問','footer.supportShipping':'配送について','footer.supportContact':'お問い合わせ','footer.followHeading':'フォローする'
+  };
+  Object.keys(I18N).forEach(function (key) { I18N[key].ja = JA[key] || I18N[key].en; });
+
   function applyLang(lang) {
-    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : (lang === 'ja' ? 'ja' : 'en');
+    if (lang === 'ja') {
+      document.documentElement.style.setProperty('--font', "'Noto Sans JP', 'Noto Sans SC', sans-serif");
+    }
 
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
       var entry = I18N[el.getAttribute('data-i18n')];
@@ -243,20 +260,18 @@
 
     var toggle = document.getElementById('langToggle');
     if (toggle) {
-      toggle.textContent = I18N['lang.toggleLabel'][lang];
+      toggle.value = lang;
       toggle.setAttribute('aria-label', I18N['lang.toggleAria'][lang]);
     }
 
     localStorage.setItem(STORAGE_KEY, lang);
   }
 
-  var initialLang = localStorage.getItem(STORAGE_KEY) === 'zh' ? 'zh' : 'en';
+  var storedLang = localStorage.getItem(STORAGE_KEY);
+  // Japanese is the default for first-time visitors; keep an explicit choice.
+  var initialLang = ['en', 'zh', 'ja'].indexOf(storedLang) >= 0 ? storedLang : 'ja';
   applyLang(initialLang);
 
   var toggleButton = document.getElementById('langToggle');
-  if (toggleButton) {
-    toggleButton.addEventListener('click', function () {
-      applyLang(document.documentElement.lang === 'en' ? 'zh' : 'en');
-    });
-  }
+  if (toggleButton) toggleButton.addEventListener('change', function () { applyLang(toggleButton.value); });
 })();

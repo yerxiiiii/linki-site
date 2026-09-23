@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preload" as="image" href="assets/optimized/hero-091709-poster.webp" fetchpriority="high" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css?v=20260907-hero-waitlist" />
   <!-- Meta Pixel Code -->
   <script>
@@ -74,7 +74,9 @@
         </div>
         <div class="nav__extra">
           <a href="join.html" class="nav__cta btn btn--accent" data-i18n="nav.cta" data-pixel-event="ClickJoinWaitlist">Join now</a>
-          <button class="lang-toggle" id="langToggle" type="button" data-i18n-aria="lang.toggleAria">切换到中文</button>
+          <select class="lang-toggle" id="langToggle" aria-label="Language">
+            <option value="en">English</option><option value="zh">中文</option><option value="ja">日本語</option>
+          </select>
         </div>
       </nav>
 

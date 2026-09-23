@@ -267,11 +267,17 @@
         invalidEmail: 'Please enter a valid email address.',
         error: 'Submission failed. Please try again later.',
       },
+      ja: {
+        missing: '名前、メールアドレス、性別、年齢層を入力してください。',
+        invalidEmail: '有効なメールアドレスを入力してください。',
+        error: '送信に失敗しました。しばらくしてからもう一度お試しください。',
+      },
     };
     function currentLang() {
-      return document.documentElement.lang && document.documentElement.lang.toLowerCase().startsWith('en')
-        ? 'en'
-        : 'zh';
+      const htmlLang = (document.documentElement.lang || '').toLowerCase();
+      if (htmlLang.startsWith('en')) return 'en';
+      if (htmlLang.startsWith('ja')) return 'ja';
+      return 'zh';
     }
 
     function setStatus(message, isError) {
